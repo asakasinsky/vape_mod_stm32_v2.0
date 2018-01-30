@@ -1,6 +1,7 @@
 
 #include "stm32f1xx_hal.h"
 #include "fonts.h"
+#include "fonts3.h"
 
 //	Deze library is door Olivier Van den Eede 2016 geschreven en aangepast voor gebruik met
 //	Stm32 microcontrollers en maakt gebruik van de HAL-i2c library's.
@@ -70,5 +71,8 @@ char ssd1306_WriteString(char* str, FontDef Font, SSD1306_COLOR color);
 void ssd1306_SetCursor(uint8_t x, uint8_t y);
 
 static void ssd1306_WriteCommand(uint8_t command);
+
+void ssd1306_WriteChar2(char ch, FontDef2 Font, SSD1306_COLOR color);
+void ssd1306_WriteString2(char* str, FontDef2 Font, SSD1306_COLOR color);
 
 #endif

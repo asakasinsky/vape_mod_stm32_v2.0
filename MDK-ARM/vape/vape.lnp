@@ -8,6 +8,7 @@
 "vape\ssd1306.o"
 "vape\vape.o"
 "vape\eeprom.o"
+"vape\fonts3.o"
 "vape\stm32f1xx_hal_adc_ex.o"
 "vape\stm32f1xx_hal_cortex.o"
 "vape\stm32f1xx_hal_gpio.o"

@@ -515,3 +515,55 @@ void ssd1306_SetCursor(uint8_t x, uint8_t y)
 	SSD1306.CurrentX = x;
 	SSD1306.CurrentY = y;
 }
+
+
+
+
+
+void ssd1306_WriteChar2(char ch, FontDef2 Font, SSD1306_COLOR color)
+{
+  uint32_t pixel, x;
+  
+  if ((((SSD1306.CurrentX + Font.FontWidth) < SSD1306_WIDTH)  && ((SSD1306.CurrentY + Font.FontHeight) < SSD1306_HEIGHT)))
+  {
+    // write char to display buffer
+    for (uint32_t y = 0; y < Font.FontHeight; y++)
+    {
+      // get font pixel
+      if(ch < 127)
+       pixel = Font.fontEn[(ch - 32) * Font.FontHeight + y];
+      else
+       pixel = Font.fontRu[(ch - 192) * Font.FontHeight + y]; 
+      // write pixel to display buffer
+      x = Font.FontWidth;
+      while(x--)
+      {
+        if (pixel & 0x0001) 
+        {
+          ssd1306_DrawPixel(SSD1306.CurrentX + x, (SSD1306.CurrentY + y), color);
+        } 
+        else 
+        {
+          ssd1306_DrawPixel(SSD1306.CurrentX + x, (SSD1306.CurrentY + y), !color);
+        }
+        pixel >>= 1;
+      }
+    } 
+  }
+  
+  // going to next position
+  SSD1306.CurrentX += Font.FontWidth;
+}
+
+void ssd1306_WriteString2(char* str, FontDef2 Font, SSD1306_COLOR color)
+{
+  // We schrijven alle char tot een nulbyte
+  while (*str) 
+  {
+    ssd1306_WriteChar2(*str, Font, color);
+    
+    // Volgende char
+    str++;
+  }
+  
+}
