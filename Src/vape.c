@@ -30,7 +30,7 @@ extern uint8_t counterCoil;
 uint16_t tik=0;
 int i;
 
-char *st[9][6]={"         "," VARIVOLT "," VARIWATT "," SETTINGS "," about    ","        "};
+char *st[11][6]={"           "," ¬¿–»¬ŒÀ‹“ "," ¬¿–»¬¿““  "," Õ¿—“–Œ… » ","  »ÌÙÓ     ","           "};
 char *st_settings[9][6]={"         "," TIME OUT ","  PUFFS  ","  RESET  ","  BACK   ","        "};
 
 uint8_t m=2;
@@ -465,12 +465,12 @@ void Menu_settings()
 
 	
 	ssd1306_SetCursor(32,27);
-	ssd1306_WriteString(st_settings[0][m2-1],Font_7x10,White);
-	SSD1306_DrawLine(32,38,101,38,White);
+	ssd1306_WriteString2(st_settings[0][m2-1],Font_7x9,White);
+	SSD1306_DrawLine(32,38,108,38,White);
 	ssd1306_SetCursor(32,39);
-	ssd1306_WriteString(st_settings[0][m2],Font_7x10,Black);
+	ssd1306_WriteString2(st_settings[0][m2],Font_7x9,Black);
 	ssd1306_SetCursor(32,52);
-	ssd1306_WriteString(st_settings[0][m2+1],Font_7x10,White);
+	ssd1306_WriteString2(st_settings[0][m2+1],Font_7x9,White);
 	ssd1306_UpdateScreen();
 	//tick_delay = HAL_GetTick();
 	
@@ -521,12 +521,12 @@ void Menu()
 	
 	//ssd1306_UpdateScreen();
 	ssd1306_SetCursor(32,27);
-	ssd1306_WriteString(st[0][m-1],Font_7x10,White);
-	SSD1306_DrawLine(32,38,101,38,White);
+	ssd1306_WriteString2(st[0][m-1],Font_7x9,White);
+	SSD1306_DrawLine(32,38,108,38,White);
 	ssd1306_SetCursor(32,39);
-	ssd1306_WriteString(st[0][m],Font_7x10,Black);
+	ssd1306_WriteString2(st[0][m],Font_7x9,Black);
 	ssd1306_SetCursor(32,52);
-	ssd1306_WriteString(st[0][m+1],Font_7x10,White);
+	ssd1306_WriteString2(st[0][m+1],Font_7x9,White);
 	ssd1306_UpdateScreen();
 	tick_delay = HAL_GetTick();
 	

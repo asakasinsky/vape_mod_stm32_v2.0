@@ -250,7 +250,7 @@ int main(void)
 		if (status==0)	
 		{
 			ssd1306_SetCursor(51,9);
-			ssd1306_WriteString("MENU",Font_7x10,White);
+			ssd1306_WriteString2("Μενώ",Font_7x9,White);
 			SSD1306_DrawLine(0,23,128,23,White);
 			ssd1306_UpdateScreen();
 
