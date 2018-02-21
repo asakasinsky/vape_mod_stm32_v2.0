@@ -1,7 +1,6 @@
 
 #include "fonts.h"
 
-// Dit zijn de bitmaps voor de 3 verschillende fonts
 
 static const uint16_t Font7x10 [] = {
 0x0000, 0x0000, 0x0000, 0x0000, 0x0000, 0x0000, 0x0000, 0x0000, 0x0000, 0x0000,  // sp

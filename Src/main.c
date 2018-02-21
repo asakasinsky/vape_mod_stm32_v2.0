@@ -185,8 +185,7 @@ int main(void)
 	while(PowerOn())
 	{
 		if(powercount<=0)
-		{
-	Power_off2();}
+		{	Power_off2();}
 		//if(powercount>=60)
 		//{break;}
 	}

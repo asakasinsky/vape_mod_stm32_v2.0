@@ -3,7 +3,7 @@
 <title>Static Call Graph - [vape\vape.axf]</title></head>
 <body><HR>
 <H1>Static Call Graph for image vape\vape.axf</H1><HR>
-<BR><P>#&#060CALLGRAPH&#062# ARM Linker, 5060528: Last Updated: Tue Jan 30 19:01:55 2018
+<BR><P>#&#060CALLGRAPH&#062# ARM Linker, 5060528: Last Updated: Wed Jan 31 17:58:47 2018
 <BR><P>
 <H3>Maximum Stack Usage =        272 bytes + Unknown(Cycles, Untraceable Function Pointers)</H3><H3>
 Call chain for Maximum Stack Depth:</H3>
@@ -1146,9 +1146,9 @@ Global Symbols
 <BR>[Address Reference Count : 1]<UL><LI> startup_stm32f103xb.o(RESET)
 </UL>
 <P><STRONG><a name="[ba]"></a>NoCoil</STRONG> (Thumb, 28 bytes, Stack size 8 bytes, vape.o(i.NoCoil))
-<BR><BR>[Stack]<UL><LI>Max Depth = 92<LI>Call Chain = NoCoil &rArr; ssd1306_WriteString &rArr; ssd1306_WriteChar &rArr; ssd1306_DrawPixel
+<BR><BR>[Stack]<UL><LI>Max Depth = 100<LI>Call Chain = NoCoil &rArr; ssd1306_WriteString2 &rArr; ssd1306_WriteChar2 &rArr; ssd1306_DrawPixel
 </UL>
-<BR>[Calls]<UL><LI><a href="#[63]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;ssd1306_WriteString
+<BR>[Calls]<UL><LI><a href="#[b5]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;ssd1306_WriteString2
 <LI><a href="#[62]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;ssd1306_SetCursor
 </UL>
 <BR>[Called By]<UL><LI><a href="#[35]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;main
@@ -1213,9 +1213,9 @@ Global Symbols
 </UL>
 
 <P><STRONG><a name="[c1]"></a>Print_Om</STRONG> (Thumb, 28 bytes, Stack size 8 bytes, vape.o(i.Print_Om))
-<BR><BR>[Stack]<UL><LI>Max Depth = 92<LI>Call Chain = Print_Om &rArr; ssd1306_WriteString &rArr; ssd1306_WriteChar &rArr; ssd1306_DrawPixel
+<BR><BR>[Stack]<UL><LI>Max Depth = 100<LI>Call Chain = Print_Om &rArr; ssd1306_WriteString2 &rArr; ssd1306_WriteChar2 &rArr; ssd1306_DrawPixel
 </UL>
-<BR>[Calls]<UL><LI><a href="#[63]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;ssd1306_WriteString
+<BR>[Calls]<UL><LI><a href="#[b5]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;ssd1306_WriteString2
 <LI><a href="#[62]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;ssd1306_SetCursor
 </UL>
 <BR>[Called By]<UL><LI><a href="#[c5]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;Read_Om_t
@@ -1260,10 +1260,10 @@ Global Symbols
 <BR>[Called By]<UL><LI><a href="#[35]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;main
 </UL>
 
-<P><STRONG><a name="[c7]"></a>Read_temperature</STRONG> (Thumb, 108 bytes, Stack size 8 bytes, vape.o(i.Read_temperature))
-<BR><BR>[Stack]<UL><LI>Max Depth = 96<LI>Call Chain = Read_temperature &rArr; __aeabi_drsub &rArr; __aeabi_dadd &rArr; _double_epilogue &rArr; _double_round
+<P><STRONG><a name="[c7]"></a>Read_temperature</STRONG> (Thumb, 108 bytes, Stack size 16 bytes, vape.o(i.Read_temperature))
+<BR><BR>[Stack]<UL><LI>Max Depth = 108<LI>Call Chain = Read_temperature &rArr; ssd1306_WriteString2 &rArr; ssd1306_WriteChar2 &rArr; ssd1306_DrawPixel
 </UL>
-<BR>[Calls]<UL><LI><a href="#[63]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;ssd1306_WriteString
+<BR>[Calls]<UL><LI><a href="#[b5]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;ssd1306_WriteString2
 <LI><a href="#[62]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;ssd1306_SetCursor
 <LI><a href="#[60]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;__aeabi_f2d
 <LI><a href="#[4c]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;__aeabi_ddiv
@@ -1647,10 +1647,7 @@ Global Symbols
 <BR>[Called By]<UL><LI><a href="#[d3]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;Varivolt
 <LI><a href="#[d0]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;Varivatt
 <LI><a href="#[ca]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;Set_Time_Out
-<LI><a href="#[c7]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;Read_temperature
-<LI><a href="#[c1]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;Print_Om
 <LI><a href="#[bb]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;PowerOn
-<LI><a href="#[ba]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;NoCoil
 <LI><a href="#[5d]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;Charge
 <LI><a href="#[35]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;main
 <LI><a href="#[d4]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;Vout
@@ -1662,6 +1659,9 @@ Global Symbols
 <BR>[Calls]<UL><LI><a href="#[e1]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;ssd1306_WriteChar2
 </UL>
 <BR>[Called By]<UL><LI><a href="#[d0]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;Varivatt
+<LI><a href="#[c7]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;Read_temperature
+<LI><a href="#[c1]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;Print_Om
+<LI><a href="#[ba]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;NoCoil
 <LI><a href="#[b8]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;Menu_settings
 <LI><a href="#[b4]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;Menu
 <LI><a href="#[35]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;main

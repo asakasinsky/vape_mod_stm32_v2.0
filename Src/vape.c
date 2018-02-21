@@ -31,7 +31,7 @@ uint16_t tik=0;
 int i;
 
 char *st[11][6]={"           "," ¬¿–»¬ŒÀ‹“ "," ¬¿–»¬¿““  "," Õ¿—“–Œ… » ","  »ÌÙÓ     ","           "};
-char *st_settings[9][6]={"         "," TIME OUT ","  PUFFS  ","  RESET  ","  BACK   ","        "};
+char *st_settings[10][6]={"           "," ¬–≈Ãﬂ ¬€ À"," «¿“ﬂ∆ »   "," —¡–Œ—     "," Õ¿«¿ƒ     ","           "};
 
 uint8_t m=2;
 uint8_t m2=2;
@@ -190,9 +190,9 @@ void Read_temperature()
 {
 	temp=value[2]/4096.0*3.33;
 		temp=(1.34-temp)/0.0043+25;
-		sprintf(tempP,"%.1fc",temp);
+		sprintf(tempP,"%.1f*",temp);
 		ssd1306_SetCursor(91,38);
-		ssd1306_WriteString(tempP,Font_7x10,White);
+		ssd1306_WriteString2(tempP,Font_7x9,White);
 		//ssd1306_UpdateScreen();
 	
 	
@@ -202,9 +202,9 @@ void Read_sensor_charge()
 {
 		temp=value[2]/4096.0*3.3;
 		temp=(1.34-temp)/0.0043+25;
-		sprintf(tempP,"%.1fc",temp);
+		sprintf(tempP,"%.1f*",temp);
 		ssd1306_SetCursor(45,50);
-		ssd1306_WriteString(tempP,Font_7x10,White);
+		ssd1306_WriteString2(tempP,Font_7x9,White);
 		ssd1306_UpdateScreen();
 		
 	
@@ -602,7 +602,7 @@ void PrintInfo()
 void Print_Om()
 {
 	ssd1306_SetCursor(91,3);
-	ssd1306_WriteString(R_vape2,Font_7x10,White);
+	ssd1306_WriteString2(R_vape2,Font_7x9,White);
 	//ssd1306_UpdateScreen();
 }
 
@@ -623,7 +623,7 @@ void Read_Om_t()
 	}
 	R_vape = 22*R_buff;
 	HAL_GPIO_WritePin(GPIOA,GPIO_PIN_9,GPIO_PIN_RESET);
-	sprintf(R_vape2,"%0.2fR",R_vape);
+	sprintf(R_vape2,"%0.2f@",R_vape);
 	Print_Om();
 }
 
@@ -632,7 +632,7 @@ void Read_Om_t()
 void NoCoil()
 {
 	ssd1306_SetCursor(91,3);
-	ssd1306_WriteString("-.--R",Font_7x10,White);
+	ssd1306_WriteString2("-.--@",Font_7x9,White);
 	//ssd1306_UpdateScreen();
 }
 
