@@ -30,7 +30,7 @@ extern uint8_t counterCoil;
 uint16_t tik=0;
 int i;
 
-char *st[11][6]={"           "," ÂÀÐÈÂÎËÜÒ "," ÂÀÐÈÂÀÒÒ  "," ÍÀÑÒÐÎÉÊÈ ","  Èíôî     ","           "};
+char *st[11][6]={"           "," ÂÀÐÈÂÎËÜÒ "," ÂÀÐÈÂÀÒÒ  "," ÍÀÑÒÐÎÉÊÈ ","  Âûêë     ","           "};
 char *st_settings[10][6]={"           "," ÂÐÅÌß ÂÛÊË"," ÇÀÒßÆÊÈ   "," ÑÁÐÎÑ     "," ÍÀÇÀÄ     ","           "};
 
 uint8_t m=2;
@@ -259,7 +259,7 @@ void Varivolt()
 if (HAL_GPIO_ReadPin(GPIOA, GPIO_PIN_0)) 
 		{
 			
-						if (read_values[1]>3.33&&low_batt==0)
+						if (read_values[1]>3.30&&low_batt==0)
 						{
 							if (counterCoil==1)
 								{
@@ -343,7 +343,7 @@ void Varivatt()
 	Draw_Frame2();
 	if (HAL_GPIO_ReadPin(GPIOA, GPIO_PIN_0))
 		{
-			if (read_values[1]>3.33&&low_batt==0)
+			if (read_values[1]>3.30&&low_batt==0)
 			{
 				if(counterCoil==1)
 				{
@@ -362,7 +362,7 @@ void Varivatt()
 						}
 			} else{	SSD1306_DrawFilledRectangle(1,1,85,30,Black);
 							ssd1306_SetCursor(0,9);
-							ssd1306_WriteString2("LOW BATT",Font_7x9,White);
+							ssd1306_WriteString("LOW BATT",Font_11x18,White);
 							ssd1306_UpdateScreen();	
 							TIM1->CCR1=0;
 							low_batt=1;
