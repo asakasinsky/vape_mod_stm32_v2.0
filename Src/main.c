@@ -101,6 +101,7 @@ uint8_t counterCoil=0;
 bool coilTest=true;
 bool FireButton=false;
 uint16_t temp_tik=0;
+uint16_t time_ADC=0;
 bool charge = false;
 bool clear =false;
 uint32_t tick_delay=0;
@@ -229,6 +230,7 @@ int main(void)
 		//tick_delay = HAL_GetTick();
 		Read_ADC();
 		temp_tik++;
+		time_ADC++;
 		Timer_off();
 		if (clear==true&&charge==false)
 		{
@@ -295,7 +297,12 @@ int main(void)
 					}else {NoCoil();}
 					
 				Varivolt();
-				Print_Acum();
+				if(time_ADC>8)
+					{
+						Print_Acum();
+						time_ADC=0;
+					}
+				
 				Counter_Fire();
 			Vout();
 			Read_Amp();
@@ -329,7 +336,12 @@ int main(void)
 						Print_Om();
 					}
 			Varivatt();
-			Print_Acum();
+			
+			if(time_ADC>8)
+					{
+						Print_Acum();
+						time_ADC=0;
+					}
 			Counter_Fire();
 			if (temp_tik>=6)
 					{	

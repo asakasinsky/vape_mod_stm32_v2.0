@@ -5,6 +5,7 @@
  #define __VAPE_H
  #include "stm32f1xx_hal.h"
  #include <stdbool.h>
+void Kalman(void);
 uint8_t PowerOn(void);	
 void Draw_Frame(void);
 void Draw_Frame2(void);

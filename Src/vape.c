@@ -28,6 +28,7 @@ extern char R_vape2[6];
 extern bool noCoil;
 extern uint8_t counterCoil;
 uint16_t tik=0;
+extern uint16_t time_ADC;
 int i;
 
 char *st[11][6]={"           "," ÂÀÐÈÂÎËÜÒ "," ÂÀÐÈÂÀÒÒ  "," ÍÀÑÒÐÎÉÊÈ ","  Âûêë     ","           "};
@@ -55,7 +56,20 @@ extern uint32_t puffs;
 char puffs_print[8];
 extern uint8_t powercount;
 
+float Mn = 0.0;		 //Ðåçóëüòàò ôèëüòðà Êàëìàíà
+float An = 0.0;		 //Èñõîäíîå çíà÷åíèå
+float Mn1 = 0.0;   //ðåçóëüòàò ïðåääóùåé èòåðàöèè
+float k = 0.1;     //Êîýôôèöèåíò 
+            
 
+void Kalman ()
+{
+	Mn = k * An;
+	An = 1 - k;
+	Mn1 = Mn1 * An;
+	Mn = Mn + Mn1;
+	Mn1 = Mn;
+}
 
 uint8_t PowerOn()
 {
@@ -179,7 +193,11 @@ void Read_ADC()
 			voltageOut[1]=(value[1]*3.33)/4096;
 			voltageOut[0]=(value[0]*3.33)/4096;
 			
-			read_values[1]=voltageOut[1]/(100000.0/(100000.0+33000.0));
+	
+			An=voltageOut[1]/(100000.0/(100000.0+33000.0));
+			Kalman();
+			read_values[1]=Mn;
+			//read_values[1]=voltageOut[1]/(100000.0/(100000.0+33000.0));
 			read_values[0]=voltageOut[0]/(100000.0/(100000.0+33000.0));
 		//	temp=value[2]/4096.0*3.33;
 		//	temp=(1.34-temp)/0.0043+25;
@@ -188,7 +206,7 @@ void Read_ADC()
 
 void Read_temperature()
 {
-	temp=value[2]/4096.0*3.33;
+		temp=value[2]/4096.0*3.33;
 		temp=(1.34-temp)/0.0043+25;
 		sprintf(tempP,"%.1f*",temp);
 		ssd1306_SetCursor(91,38);
@@ -244,10 +262,12 @@ void Read_Amp()
 //	amper=(amper_filter[0]+amper_filter[1]+amper_filter[2]+amper_filter[3]+amper_filter[4]+amper_filter[5])/6.0;
 	switch (status)
 		{
-			case 1:amper=volt_set/R_vape;break;
-			case 2:amper=volt_set_w/R_vape;break;
+//			case 1:amper=volt_set/R_vape;break;
+//			case 2:amper=volt_set_w/R_vape;break;
+			case 1:amper=(read_values[1]-read_values[0])/R_vape;break;
+			case 2:amper=(read_values[1]-read_values[0])/R_vape;break;
 		}
-	sprintf(amper_print,"%.2fA",amper);
+	sprintf(amper_print,"%.1fA",amper);
 }
 
 
@@ -613,7 +633,7 @@ void Read_Om_t()
 	//Read_ADC();
 	
 	if(read_values[0]>1.0){
-	for(i=0;i<50;i++)
+	for(uint8_t i=0;i<85;i++)
 	{
 		Read_ADC();
 		R_buff = (read_values[1]/read_values[0])-1;
@@ -644,10 +664,10 @@ void Print_Acum()
 	
 	
 	
-		SSD1306_DrawFilledRectangle(5,38,71,20, White);
+		SSD1306_DrawFilledRectangle(5,38,70,20, White);
 	if (read_values[1]<3.45&&readACUM==true)
 	{
-		SSD1306_DrawFilledRectangle(5,38,71,20, Black);
+		SSD1306_DrawFilledRectangle(5,38,70,20, Black);
 		readACUM=false;
 	}
 	if (read_values[1]<3.50&&readACUM==true)
@@ -657,7 +677,7 @@ void Print_Acum()
 	}
 	if (read_values[1]<3.55&&readACUM==true)
 	{
-			SSD1306_DrawFilledRectangle(7,38,71,20, Black);
+			SSD1306_DrawFilledRectangle(7,38,70,20, Black);
 			readACUM=false;
 	}
 	if (read_values[1]<3.58&&readACUM==true)

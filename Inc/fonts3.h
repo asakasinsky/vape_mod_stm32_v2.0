@@ -7,10 +7,12 @@ typedef struct {
   const unsigned char FontHeight;
   const unsigned char *fontEn;
   const unsigned char *fontRu;
+	
 } FontDef2;
 
 // some available fonts
 extern FontDef2 Font_7x9;
+
 
 #endif
 
