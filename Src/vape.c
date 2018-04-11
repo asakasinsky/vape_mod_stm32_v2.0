@@ -5,6 +5,7 @@
 
 
 
+char ch_timestamp[6];
 extern float read_values[2];
 extern float voltageOut[2];
 extern float value[3];
@@ -32,7 +33,7 @@ extern uint16_t time_ADC;
 int i;
 
 char *st[11][6]={"           "," ВАРИВОЛЬТ "," ВАРИВАТТ  "," НАСТРОЙКИ ","  Выкл     ","           "};
-char *st_settings[10][6]={"           "," ВРЕМЯ ВЫКЛ"," ЗАТЯЖКИ   "," СБРОС     "," НАЗАД     ","           "};
+char *st_settings[11][6]={"           "," ВРЕМЯ ВЫКЛ"," ВРЕМЯ OUT  "" ЗАТЯЖКИ   "," СБРОС     "," НАЗАД     ","           "};
 
 uint8_t m=2;
 uint8_t m2=2;
@@ -44,6 +45,8 @@ extern bool charge;
 extern bool clear;
 extern uint32_t tick_delay;
 extern uint32_t timeout;
+extern int32_t setout;
+char setout2[5];
 char timeout2[5];
 extern uint32_t volt_set_eeprom;
 extern uint32_t watt_set_eeprom;
@@ -60,7 +63,32 @@ float Mn = 0.0;		 //Результат фильтра Калмана
 float An = 0.0;		 //Исходное значение
 float Mn1 = 0.0;   //результат преддущей итерации
 float k = 0.1;     //Коэффициент 
-            
+
+volatile float temp_timestamp=0.0;  //Отсчет микросекунд нажатой кнопки Fire
+
+
+void Out_Time()
+{
+	TIM1->CCR1=0;
+	SSD1306_DrawFilledRectangle(1,1,85,30,Black);
+	ssd1306_SetCursor(0,9);
+	ssd1306_WriteString("Out Time",Font_11x18,White);
+	ssd1306_UpdateScreen();	
+							
+
+}
+
+
+void Print_Sec()
+{
+		
+		
+		sprintf(ch_timestamp,"%0.2fs",(temp_timestamp/1000.0));
+		ssd1306_SetCursor(4,7);
+		ssd1306_WriteString(ch_timestamp,Font_16x25,White);
+
+}
+
 
 void Kalman ()
 {
@@ -117,6 +145,7 @@ void Power_off()
 			if (status==1||status==2){
 			EE_Write(3,status);}
 			EE_Write(4,puffs);
+      EE_Write(5,setout);
 			SSD1306_OFF();
 			PWR->CSR   |= PWR_CSR_EWUP;
 			PWR->CR    |= PWR_CR_CWUF;
@@ -283,12 +312,20 @@ if (HAL_GPIO_ReadPin(GPIOA, GPIO_PIN_0))
 						{
 							if (counterCoil==1)
 								{
-									FireButton=true;
-									noCoil=true;
-									TIM1->CCR1=PWM_OUT;
-									tick_delay = HAL_GetTick();
-									ssd1306_SetCursor(91,14);
-									ssd1306_WriteString(amper_print,Font_7x10,White);
+									if(FireButton==false)temp_timestamp=0;
+									
+									if(temp_timestamp>setout)
+										Out_Time();
+									else
+										{
+											Print_Sec();
+											FireButton=true;
+											noCoil=true;
+											TIM1->CCR1=PWM_OUT;
+											tick_delay = HAL_GetTick();
+											ssd1306_SetCursor(91,14);
+											ssd1306_WriteString(amper_print,Font_7x10,White);
+										}
 								} 
 									else 
 									{
@@ -367,12 +404,21 @@ void Varivatt()
 			{
 				if(counterCoil==1)
 				{
+					if(FireButton==false)temp_timestamp=0;
 					FireButton=true;
 					noCoil=true;
-					TIM1->CCR1=PWM_OUT;
-					tick_delay = HAL_GetTick();
-					ssd1306_SetCursor(91,14);
-					ssd1306_WriteString(amper_print,Font_7x10,White);
+					
+					if(temp_timestamp>setout)
+						Out_Time();
+						
+					else
+						{
+							TIM1->CCR1=PWM_OUT;
+							tick_delay = HAL_GetTick();
+							Print_Sec();
+							ssd1306_SetCursor(91,14);
+							ssd1306_WriteString(amper_print,Font_7x10,White);
+						}
 				} else 
 						{
 							SSD1306_DrawFilledRectangle(1,1,85,30,Black);
@@ -437,7 +483,58 @@ if (!HAL_GPIO_ReadPin(GPIOB, GPIO_PIN_12)&&volt_set_w>=0.2)
 
 }
 			
-		
+void Set_Out()
+{
+    ssd1306_SetCursor(1,1);
+		ssd1306_WriteString2("Настройка времени",Font_7x9,White);
+    ssd1306_SetCursor(10,10);
+		ssd1306_WriteString2("работы койла",Font_7x9,White);
+	if (!HAL_GPIO_ReadPin(GPIOB, GPIO_PIN_14))
+		{
+			
+			setout=setout+100;
+					
+		}
+
+if (!HAL_GPIO_ReadPin(GPIOB, GPIO_PIN_12))
+		{
+			setout=setout-100;
+			
+		}
+if(setout>6000)
+		{
+     
+      ssd1306_SetCursor(42,27);
+      ssd1306_WriteString2("Опасно",Font_7x9,White);
+      sprintf(setout2,"%.1f Sec ",(float)(setout/1000.0));
+      ssd1306_SetCursor(22,42);
+      ssd1306_WriteString(setout2,Font_13x19,White);
+      ssd1306_UpdateScreen();
+					
+		}
+      else if(setout<=0)
+        {
+          setout=0;
+          ssd1306_SetCursor(22,42);
+          ssd1306_WriteString("Off",Font_13x19,White);
+          ssd1306_UpdateScreen();
+        }
+        else
+        {
+            ssd1306_SetCursor(42,27);
+            ssd1306_WriteString2("      ",Font_7x9,White);
+            sprintf(setout2,"%.1f Sec ",(float)(setout/1000.0));
+						ssd1306_SetCursor(22,42);
+						ssd1306_WriteString(setout2,Font_13x19,White);
+						ssd1306_UpdateScreen();
+        }
+
+
+	
+}
+
+
+  
 	
 	
 
@@ -459,6 +556,7 @@ if (!HAL_GPIO_ReadPin(GPIOB, GPIO_PIN_12))
 		}
 			if(timeout>99000)
 				{
+          
 					sprintf(timeout2,"%d",(timeout/1000));
 					ssd1306_SetCursor(50,39);
 					ssd1306_WriteString(timeout2,Font_13x19,White);
@@ -495,7 +593,7 @@ void Menu_settings()
 	//tick_delay = HAL_GetTick();
 	
 	if (!HAL_GPIO_ReadPin(GPIOB, GPIO_PIN_12))
-		{if (m2>=4)m2=4;else m2++;HAL_Delay(1);}
+		{if (m2>=5)m2=5;else m2++;HAL_Delay(1);}
 
 if (!HAL_GPIO_ReadPin(GPIOB, GPIO_PIN_14))
 		{if(m2<=1)m2=1;else m2--;HAL_Delay(1);}
@@ -518,10 +616,14 @@ if (!HAL_GPIO_ReadPin(GPIOB, GPIO_PIN_14))
 			}	
 				if (!HAL_GPIO_ReadPin(GPIOB, GPIO_PIN_13)&&m2==2)
 			{ 
+        SSD1306_DrawFilledRectangle(0,24,128,40,Black);
+				ssd1306_UpdateScreen();
+				status=7;
+				old_status=status;
 				//puffs=0;
 			}	
 			
-			if (!HAL_GPIO_ReadPin(GPIOB, GPIO_PIN_13)&&m2==3)
+			if (!HAL_GPIO_ReadPin(GPIOB, GPIO_PIN_13)&&m2==4)
 			{ 
 				volt_set=2.2;
 				watt_set=16.0;
@@ -529,6 +631,7 @@ if (!HAL_GPIO_ReadPin(GPIOB, GPIO_PIN_14))
 				timeout=160000;
 				status=1;
 				old_status=1;
+        setout=9900;
 				Power_off();
 			}	
 

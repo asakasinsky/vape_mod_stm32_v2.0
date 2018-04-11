@@ -60,6 +60,7 @@ TIM_HandleTypeDef htim1;
 
 /* USER CODE BEGIN PV */
 /* Private variables ---------------------------------------------------------*/
+
 uint32_t adc_buffer[3];
 float value[3];
 float read_values[2];
@@ -111,7 +112,7 @@ uint32_t watt_set_eeprom;
 uint32_t status_eeprom;
 uint32_t puffs=0;
 uint8_t powercount=1;
-
+int32_t setout=0;
 /* USER CODE END PV */
 
 /* Private function prototypes -----------------------------------------------*/
@@ -183,13 +184,13 @@ int main(void)
 	HAL_TIM_PWM_Start(&htim1, TIM_CHANNEL_1);
 	ssd1306_Init();
 	
-	while(PowerOn())
-	{
-		if(powercount<=0)
-		{	Power_off2();}
-		//if(powercount>=60)
-		//{break;}
-	}
+//	while(PowerOn())
+//	{
+//		if(powercount<=0)
+//		{	Power_off2();}
+//		//if(powercount>=60)
+//		//{break;}
+//	}
 	
 	SSD1306_DrawFilledRectangle(0,0,128,64,Black);
 	ssd1306_UpdateScreen();
@@ -211,6 +212,7 @@ int main(void)
 		EE_Read(2,&timeout);
 		EE_Read(3,&status_eeprom);
 		EE_Read(4,&puffs);
+    EE_Read(5,&(setout));
 		status=status_eeprom;
 		old_status=status;
 		volt_set=volt_set_eeprom/100.0;
@@ -253,7 +255,7 @@ int main(void)
 			ssd1306_SetCursor(51,9);
 			ssd1306_WriteString2("Μενώ",Font_7x9,White);
 			SSD1306_DrawLine(0,23,128,23,White);
-			ssd1306_UpdateScreen();
+			//ssd1306_UpdateScreen();
 
 			Menu();
 			
@@ -267,6 +269,11 @@ int main(void)
 		if (status==6)	
 		{
 			Set_Time_Out();
+		}
+    
+    if (status==7)	
+		{
+			Set_Out();
 		}
 		
 		
@@ -419,10 +426,12 @@ int main(void)
 
 			
 }
-		
-	
-			
-		
+  
+
+
+
+ 
+  
 
 
   /* USER CODE END 3 */

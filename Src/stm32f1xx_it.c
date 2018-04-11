@@ -36,7 +36,8 @@
 #include "stm32f1xx_it.h"
 
 /* USER CODE BEGIN 0 */
-
+extern uint32_t timestamp;
+extern float temp_timestamp;
 /* USER CODE END 0 */
 
 /* External variables --------------------------------------------------------*/
@@ -173,7 +174,8 @@ void SysTick_Handler(void)
   HAL_IncTick();
   HAL_SYSTICK_IRQHandler();
   /* USER CODE BEGIN SysTick_IRQn 1 */
-
+	
+	temp_timestamp++;
   /* USER CODE END SysTick_IRQn 1 */
 }
 

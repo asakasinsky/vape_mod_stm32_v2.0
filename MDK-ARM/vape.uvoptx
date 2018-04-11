@@ -161,112 +161,112 @@
         <Ww>
           <count>2</count>
           <WinNumber>1</WinNumber>
-          <ItemText>adc_buffer[i],0x0A</ItemText>
+          <ItemText>read_values[1]</ItemText>
         </Ww>
         <Ww>
           <count>3</count>
           <WinNumber>1</WinNumber>
-          <ItemText>read_values[1]</ItemText>
+          <ItemText>read_values[0]</ItemText>
         </Ww>
         <Ww>
           <count>4</count>
           <WinNumber>1</WinNumber>
-          <ItemText>read_values[0]</ItemText>
+          <ItemText>temp</ItemText>
         </Ww>
         <Ww>
           <count>5</count>
           <WinNumber>1</WinNumber>
-          <ItemText>temp</ItemText>
+          <ItemText>adc_buffer[3],0x0A</ItemText>
         </Ww>
         <Ww>
           <count>6</count>
           <WinNumber>1</WinNumber>
-          <ItemText>adc_buffer[i],0x0A</ItemText>
+          <ItemText>value[3]</ItemText>
         </Ww>
         <Ww>
           <count>7</count>
           <WinNumber>1</WinNumber>
-          <ItemText>adc_buffer[3],0x0A</ItemText>
+          <ItemText>value[1]</ItemText>
         </Ww>
         <Ww>
           <count>8</count>
           <WinNumber>1</WinNumber>
-          <ItemText>value[3]</ItemText>
+          <ItemText>value[0]</ItemText>
         </Ww>
         <Ww>
           <count>9</count>
           <WinNumber>1</WinNumber>
-          <ItemText>value[1]</ItemText>
+          <ItemText>value[2]</ItemText>
         </Ww>
         <Ww>
           <count>10</count>
           <WinNumber>1</WinNumber>
-          <ItemText>value[0]</ItemText>
+          <ItemText>PWM_UP,0x0A</ItemText>
         </Ww>
         <Ww>
           <count>11</count>
           <WinNumber>1</WinNumber>
-          <ItemText>value[2]</ItemText>
+          <ItemText>PWM_OUT,0x0A</ItemText>
         </Ww>
         <Ww>
           <count>12</count>
           <WinNumber>1</WinNumber>
-          <ItemText>PWM_UP,0x0A</ItemText>
+          <ItemText>value</ItemText>
         </Ww>
         <Ww>
           <count>13</count>
           <WinNumber>1</WinNumber>
-          <ItemText>PWM_OUT,0x0A</ItemText>
+          <ItemText>FireButton,0x0A</ItemText>
         </Ww>
         <Ww>
           <count>14</count>
           <WinNumber>1</WinNumber>
-          <ItemText>value</ItemText>
+          <ItemText>watt_set_eeprom,0x0A</ItemText>
         </Ww>
         <Ww>
           <count>15</count>
           <WinNumber>1</WinNumber>
-          <ItemText>FireButton,0x0A</ItemText>
+          <ItemText>volt_set,0x0A</ItemText>
         </Ww>
         <Ww>
           <count>16</count>
           <WinNumber>1</WinNumber>
-          <ItemText>watt_set_eeprom,0x0A</ItemText>
+          <ItemText>watt_set,0x0A</ItemText>
         </Ww>
         <Ww>
           <count>17</count>
           <WinNumber>1</WinNumber>
-          <ItemText>volt_set,0x0A</ItemText>
+          <ItemText>status,0x0A</ItemText>
         </Ww>
         <Ww>
           <count>18</count>
           <WinNumber>1</WinNumber>
-          <ItemText>watt_set,0x0A</ItemText>
+          <ItemText>timeout,0x0A</ItemText>
         </Ww>
         <Ww>
           <count>19</count>
           <WinNumber>1</WinNumber>
-          <ItemText>status,0x0A</ItemText>
+          <ItemText>tick_delay,0x0A</ItemText>
         </Ww>
         <Ww>
           <count>20</count>
           <WinNumber>1</WinNumber>
-          <ItemText>timeout,0x0A</ItemText>
+          <ItemText>\\vape\../Src/main.c\volt_set_w,0x0A</ItemText>
         </Ww>
         <Ww>
           <count>21</count>
           <WinNumber>1</WinNumber>
-          <ItemText>tick_delay,0x0A</ItemText>
+          <ItemText>status_eeprom,0x0A</ItemText>
         </Ww>
         <Ww>
           <count>22</count>
           <WinNumber>1</WinNumber>
-          <ItemText>\\vape\../Src/main.c\volt_set_w,0x0A</ItemText>
+          <ItemText>counterCoil,0x0A</ItemText>
         </Ww>
         <Ww>
           <count>23</count>
           <WinNumber>1</WinNumber>
-          <ItemText>status_eeprom,0x0A</ItemText>
+          <ItemText>puffs,0x0A</ItemText>
         </Ww>
         <Ww>
           <count>24</count>
@@ -276,7 +276,7 @@
         <Ww>
           <count>25</count>
           <WinNumber>1</WinNumber>
-          <ItemText>puffs,0x0A</ItemText>
+          <ItemText>powercount,0x0A</ItemText>
         </Ww>
         <Ww>
           <count>26</count>
@@ -286,27 +286,37 @@
         <Ww>
           <count>27</count>
           <WinNumber>1</WinNumber>
-          <ItemText>powercount,0x0A</ItemText>
+          <ItemText>R_vape</ItemText>
         </Ww>
         <Ww>
           <count>28</count>
           <WinNumber>1</WinNumber>
-          <ItemText>counterCoil,0x0A</ItemText>
+          <ItemText>R_buff</ItemText>
         </Ww>
         <Ww>
           <count>29</count>
           <WinNumber>1</WinNumber>
-          <ItemText>R_vape</ItemText>
+          <ItemText>R_vape2,0x0A</ItemText>
         </Ww>
         <Ww>
           <count>30</count>
           <WinNumber>1</WinNumber>
-          <ItemText>R_buff</ItemText>
+          <ItemText>timestamp,0x0A</ItemText>
         </Ww>
         <Ww>
           <count>31</count>
           <WinNumber>1</WinNumber>
-          <ItemText>R_vape2,0x0A</ItemText>
+          <ItemText>temp_timestamp</ItemText>
+        </Ww>
+        <Ww>
+          <count>32</count>
+          <WinNumber>1</WinNumber>
+          <ItemText>setout,0x0A</ItemText>
+        </Ww>
+        <Ww>
+          <count>33</count>
+          <WinNumber>1</WinNumber>
+          <ItemText>setout2,0x0A</ItemText>
         </Ww>
       </WatchWindow1>
       <WatchWindow2>

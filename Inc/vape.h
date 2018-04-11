@@ -16,6 +16,7 @@ void Read_temperature(void);
 void Read_Amp(void);
 void Varivolt(void);
 void Varivatt(void);
+void Set_Out(void);
 void Set_Time_Out(void);
 void Menu_settings(void);
 void Menu(void);
