@@ -27,10 +27,15 @@ Project File Date:  04/09/2018
 <h2>Output:</h2>
 *** Using Compiler 'V5.06 update 5 (build 528)', folder: 'C:\Keil_v5\ARM\ARMCC\Bin'
 Build target 'vape'
+compiling eeprom.c...
+compiling main.c...
+../Src/main.c(215): warning:  #167-D: argument of type "int32_t *" is incompatible with parameter of type "uint32_t *"
+      EE_Read(5,&(setout));
+../Src/main.c: 1 warning, 0 errors
 compiling vape.c...
 linking...
-Program Size: Code=22832 RO-data=15524 RW-data=756 ZI-data=4428  
-"vape\vape.axf" - 0 Error(s), 0 Warning(s).
+Program Size: Code=23220 RO-data=19704 RW-data=764 ZI-data=4428  
+"vape\vape.axf" - 0 Error(s), 1 Warning(s).
 
 <h2>Software Packages used:</h2>
 
@@ -53,7 +58,7 @@ Package Vendor: Keil
 <h2>Collection of Component Files used:</h2>
 
    * Component: ARM::CMSIS:CORE:5.1.1
-Build Time Elapsed:  00:00:02
+Build Time Elapsed:  00:00:03
 </pre>
 </body>
 </html>

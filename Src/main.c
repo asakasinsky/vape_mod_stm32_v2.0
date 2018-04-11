@@ -184,13 +184,13 @@ int main(void)
 	HAL_TIM_PWM_Start(&htim1, TIM_CHANNEL_1);
 	ssd1306_Init();
 	
-//	while(PowerOn())
-//	{
-//		if(powercount<=0)
-//		{	Power_off2();}
-//		//if(powercount>=60)
-//		//{break;}
-//	}
+	while(PowerOn())
+	{
+		if(powercount<=0)
+		{	Power_off2();}
+		//if(powercount>=60)
+		//{break;}
+	}
 	
 	SSD1306_DrawFilledRectangle(0,0,128,64,Black);
 	ssd1306_UpdateScreen();

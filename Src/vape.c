@@ -485,9 +485,9 @@ if (!HAL_GPIO_ReadPin(GPIOB, GPIO_PIN_12)&&volt_set_w>=0.2)
 			
 void Set_Out()
 {
-    ssd1306_SetCursor(1,1);
+    ssd1306_SetCursor(5,1);
 		ssd1306_WriteString2("Настройка времени",Font_7x9,White);
-    ssd1306_SetCursor(10,10);
+    ssd1306_SetCursor(20,11);
 		ssd1306_WriteString2("работы койла",Font_7x9,White);
 	if (!HAL_GPIO_ReadPin(GPIOB, GPIO_PIN_14))
 		{
