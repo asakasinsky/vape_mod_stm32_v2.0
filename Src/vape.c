@@ -4,7 +4,7 @@
 #include "eeprom.h"
 
 
-
+uint8_t click=0; 
 char ch_timestamp[6];
 extern float read_values[2];
 extern float voltageOut[2];
@@ -33,7 +33,7 @@ extern uint16_t time_ADC;
 int i;
 
 char *st[11][6]={"           "," ÂÀÐÈÂÎËÜÒ "," ÂÀÐÈÂÀÒÒ  "," ÍÀÑÒÐÎÉÊÈ ","  Âûêë     ","           "};
-char *st_settings[11][6]={"           "," ÂÐÅÌß ÂÛÊË"," ÂÐÅÌß OUT  "" ÇÀÒßÆÊÈ   "," ÑÁÐÎÑ     "," ÍÀÇÀÄ     ","           "};
+char *st_settings[12][7]={"           "," ÂÐÅÌß ÂÛÊË"," ÂÐÅÌß OUT  "," ÇÀÒßÆÊÈ  "," ÑÁÐÎÑ     "," ÍÀÇÀÄ     ","           "};
 
 uint8_t m=2;
 uint8_t m2=2;
@@ -57,7 +57,7 @@ uint8_t low_batt=0;
 bool coil_tik=true;
 extern uint32_t puffs;
 char puffs_print[8];
-extern uint8_t powercount;
+extern uint32_t powercount;
 
 float Mn = 0.0;		 //Ðåçóëüòàò ôèëüòðà Êàëìàíà
 float An = 0.0;		 //Èñõîäíîå çíà÷åíèå
@@ -65,6 +65,10 @@ float Mn1 = 0.0;   //ðåçóëüòàò ïðåääóùåé èòåðàöèè
 float k = 0.1;     //Êîýôôèöèåíò 
 
 volatile float temp_timestamp=0.0;  //Îòñ÷åò ìèêðîñåêóíä íàæàòîé êíîïêè Fire
+
+
+
+
 
 
 void Out_Time()
@@ -90,6 +94,10 @@ void Print_Sec()
 }
 
 
+
+
+
+
 void Kalman ()
 {
 	Mn = k * An;
@@ -98,6 +106,10 @@ void Kalman ()
 	Mn = Mn + Mn1;
 	Mn1 = Mn;
 }
+
+
+
+
 
 uint8_t PowerOn()
 {
@@ -111,8 +123,13 @@ uint8_t PowerOn()
 		
 		if (powercount>=125)
 		{
+      
+      
 			SSD1306_DrawFilledRectangle(0,0,128,64,Black);
 			ssd1306_UpdateScreen();
+      
+    
+      
 			ssd1306_SetCursor(50,10);
 			ssd1306_WriteString("Hi",Font_14x22,White);
 			ssd1306_SetCursor(20,30);
@@ -136,7 +153,7 @@ uint8_t PowerOn()
 
 void Power_off()
 {			
-	
+      SSD1306_OFF();
 			volt_set_eeprom=volt_set*100.0;
 			watt_set_eeprom=watt_set*100.0;
 			EE_Write(0,volt_set_eeprom);
@@ -146,7 +163,7 @@ void Power_off()
 			EE_Write(3,status);}
 			EE_Write(4,puffs);
       EE_Write(5,setout);
-			SSD1306_OFF();
+			
 			PWR->CSR   |= PWR_CSR_EWUP;
 			PWR->CR    |= PWR_CR_CWUF;
 			PWR->CR = PWR_CR_PDDS | PWR_CR_CWUF;
@@ -299,12 +316,37 @@ void Read_Amp()
 	sprintf(amper_print,"%.1fA",amper);
 }
 
-
+void Power_click()
+{
+  
+  
+  if(FireButton==false)
+  {
+    click++;
+  }
+  else  
+   if(temp_timestamp>900)
+      {
+        click=0;
+      }
+ if(temp_timestamp>900)
+  {
+    click=0;
+  }
+  
+  if(click>2)
+    Power_off();
+  
+}
 
 
 void Varivolt()
 {
 	Draw_Frame2();
+    if(temp_timestamp>900)
+        {
+          click=0;
+        }
 if (HAL_GPIO_ReadPin(GPIOA, GPIO_PIN_0)) 
 		{
 			
@@ -312,8 +354,12 @@ if (HAL_GPIO_ReadPin(GPIOA, GPIO_PIN_0))
 						{
 							if (counterCoil==1)
 								{
-									if(FireButton==false)temp_timestamp=0;
+									if(FireButton==false){temp_timestamp=0;puffs++;}
 									
+                  Power_click();
+                  FireButton=true;
+                  noCoil=true;
+                  
 									if(temp_timestamp>setout)
 										Out_Time();
 									else
@@ -396,7 +442,10 @@ if (!HAL_GPIO_ReadPin(GPIOB, GPIO_PIN_12)&&volt_set>=0.01)
 
 void Varivatt()
 {
-	
+	 if(temp_timestamp>900)
+        {
+          click=0;
+        }
 	Draw_Frame2();
 	if (HAL_GPIO_ReadPin(GPIOA, GPIO_PIN_0))
 		{
@@ -404,7 +453,9 @@ void Varivatt()
 			{
 				if(counterCoil==1)
 				{
-					if(FireButton==false)temp_timestamp=0;
+					if(FireButton==false){temp_timestamp=0;puffs++;}
+          
+          Power_click();
 					FireButton=true;
 					noCoil=true;
 					
@@ -477,14 +528,39 @@ if (!HAL_GPIO_ReadPin(GPIOB, GPIO_PIN_12)&&volt_set_w>=0.2)
 			}
 //	sprintf(puffs_print,"%d",puffs);
 //	ssd1306_SetCursor(91,24);
-//	ssd1306_WriteString(puffs_print,Font_7x10,White);
+//	ssd1306_WriteString2(puffs_print,Font_7x9,White);
 	
 
 
 }
+
+
+void PuffsPrint()
+{
+  SSD1306_DrawFilledRectangle(0,0,128,22,Black);
+  ssd1306_SetCursor(5,1);
+	ssd1306_WriteString2("Îáùåå êîëè÷åñòâî",Font_7x9,White);
+  ssd1306_SetCursor(20,11);
+	ssd1306_WriteString2("çàòÿæåê",Font_7x9,White);
+  sprintf(puffs_print,"%d",puffs);
+  ssd1306_SetCursor(22,42);
+  ssd1306_WriteString2(puffs_print,Font_7x9,White);
+  if (HAL_GPIO_ReadPin(GPIOA, GPIO_PIN_0))
+  {
+    SSD1306_DrawFilledRectangle(0,35,128,29,Black);
+    puffs=0;
+  }
+  	if (!HAL_GPIO_ReadPin(GPIOB, GPIO_PIN_13))
+    { status=5;}
+}
+
+
+
+
 			
 void Set_Out()
 {
+    SSD1306_DrawFilledRectangle(0,0,128,22,Black);
     ssd1306_SetCursor(5,1);
 		ssd1306_WriteString2("Íàñòðîéêà âðåìåíè",Font_7x9,White);
     ssd1306_SetCursor(20,11);
@@ -501,6 +577,8 @@ if (!HAL_GPIO_ReadPin(GPIOB, GPIO_PIN_12))
 			setout=setout-100;
 			
 		}
+    if (!HAL_GPIO_ReadPin(GPIOB, GPIO_PIN_13))
+      { status=5;}
 if(setout>6000)
 		{
      
@@ -541,6 +619,12 @@ if(setout>6000)
 
 void Set_Time_Out()
 {
+  
+    SSD1306_DrawFilledRectangle(0,0,128,22,Black);
+    ssd1306_SetCursor(5,1);
+		ssd1306_WriteString2("Íàñòðîéêà âðåìåíè",Font_7x9,White);
+    ssd1306_SetCursor(30,11);
+		ssd1306_WriteString2("âûêëþ÷åíèÿ",Font_7x9,White);
 	
 	if (!HAL_GPIO_ReadPin(GPIOB, GPIO_PIN_14))
 		{
@@ -554,7 +638,13 @@ if (!HAL_GPIO_ReadPin(GPIOB, GPIO_PIN_12))
 			timeout=timeout-1000;
 			
 		}
-			if(timeout>99000)
+
+if (!HAL_GPIO_ReadPin(GPIOB, GPIO_PIN_13))
+     { status=5;}
+    
+    
+    
+if(timeout>99000)
 				{
           
 					sprintf(timeout2,"%d",(timeout/1000));
@@ -599,12 +689,14 @@ if (!HAL_GPIO_ReadPin(GPIOB, GPIO_PIN_14))
 		{if(m2<=1)m2=1;else m2--;HAL_Delay(1);}
 
 		
-		if (!HAL_GPIO_ReadPin(GPIOB, GPIO_PIN_13)&&m2==4)
+		if (!HAL_GPIO_ReadPin(GPIOB, GPIO_PIN_13)&&m2==5)
 			{ 
 				status=0;
 				old_status=status; 
 				m=3;
+        HAL_Delay(5);
 				return;
+       
 			}
 			
 			if (!HAL_GPIO_ReadPin(GPIOB, GPIO_PIN_13)&&m2==1)
@@ -620,18 +712,32 @@ if (!HAL_GPIO_ReadPin(GPIOB, GPIO_PIN_14))
 				ssd1306_UpdateScreen();
 				status=7;
 				old_status=status;
-				//puffs=0;
+				
+        HAL_Delay(5);
 			}	
+      
+      	if (!HAL_GPIO_ReadPin(GPIOB, GPIO_PIN_13)&&m2==3)
+			{ 
+        SSD1306_DrawFilledRectangle(0,24,128,40,Black);
+				ssd1306_UpdateScreen();
+       
+        status=8;
+				old_status=status;
+        HAL_Delay(5);
+			}
+      
+
+      
 			
 			if (!HAL_GPIO_ReadPin(GPIOB, GPIO_PIN_13)&&m2==4)
 			{ 
 				volt_set=2.2;
-				watt_set=16.0;
+				watt_set=21.0;
 				puffs=0;
 				timeout=160000;
 				status=1;
 				old_status=1;
-        setout=9900;
+        setout=3500;
 				Power_off();
 			}	
 
@@ -1277,9 +1383,67 @@ void Counter_Fire()
 {
 	if (FireButton==true&&coil_tik==true)
 	{
-		puffs++;
+	//	puffs++;
 		coil_tik=false;
 	}
 }
+
+uint8_t PowerOn2()
+{
+//      char print2[2]={" "};
+      //SSD1306_DrawFilledRectangle(0,0,128,64,Black);
+//		//	ssd1306_UpdateScreen();
+			ssd1306_SetCursor(12,27);
+//			ssd1306_WriteString2("ÍÀÆÌÈ ÒÐÈ ÐÀÇÀ",Font_7x9,White);
+//      sprintf(print2,"%.d",click);
+//			ssd1306_SetCursor(55,30);
+//			ssd1306_WriteString(print2,Font_14x22,White);
+//			ssd1306_UpdateScreen();
+  
+     if (click==0)
+       ssd1306_WriteString2("ÍÀÆÌÈ ÒÐÈ ÐÀÇÀ",Font_7x9,White);
+      if (click==1)
+        ssd1306_WriteString2("ÍÀÆÌÈ ÄÂÀ ÐÀÇÀ",Font_7x9,White);
+      if (click==2)
+        ssd1306_WriteString2("ÍÀÆÌÈ ÎÄÈÍ ÐÀÇ",Font_7x9,White);
+      
+      ssd1306_UpdateScreen();  
+      powercount++;
+  
+if (HAL_GPIO_ReadPin(GPIOA, GPIO_PIN_0)&&FireButton==false)
+      { 
+        FireButton=true;
+         click++;
+        powercount=0;
+        temp_timestamp=0;
+       // HAL_Delay(100);
+        if(click>2)
+        {
+            click=0;
+            return 0;
+        }
+       
+      }
+if (powercount>1&&!HAL_GPIO_ReadPin(GPIOA, GPIO_PIN_0)) FireButton=false;    
+if (powercount>15)
+    {
+      click=0;
+      powercount=0;
+//      ssd1306_SetCursor(40,16);
+//      ssd1306_WriteString2("ÁÛÑÒÐÎ",Font_7x9,White);
+    }      
+
+  
+    
+if (temp_timestamp>10000)
+       Power_off2();
+
+//  return 1;
+
+//HAL_Delay(100);
+return 1;
+}
+
+
 
 

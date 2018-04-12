@@ -318,6 +318,26 @@
           <WinNumber>1</WinNumber>
           <ItemText>setout2,0x0A</ItemText>
         </Ww>
+        <Ww>
+          <count>34</count>
+          <WinNumber>1</WinNumber>
+          <ItemText>click,0x0A</ItemText>
+        </Ww>
+        <Ww>
+          <count>35</count>
+          <WinNumber>1</WinNumber>
+          <ItemText>powercount,0x0A</ItemText>
+        </Ww>
+        <Ww>
+          <count>36</count>
+          <WinNumber>1</WinNumber>
+          <ItemText>temp_timestamp</ItemText>
+        </Ww>
+        <Ww>
+          <count>37</count>
+          <WinNumber>1</WinNumber>
+          <ItemText>FireButton,0x0A</ItemText>
+        </Ww>
       </WatchWindow1>
       <WatchWindow2>
         <Ww>

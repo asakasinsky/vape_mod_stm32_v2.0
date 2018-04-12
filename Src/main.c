@@ -111,8 +111,9 @@ uint32_t volt_set_eeprom;
 uint32_t watt_set_eeprom;
 uint32_t status_eeprom;
 uint32_t puffs=0;
-uint8_t powercount=1;
+uint32_t powercount=1;
 int32_t setout=0;
+
 /* USER CODE END PV */
 
 /* Private function prototypes -----------------------------------------------*/
@@ -160,8 +161,12 @@ int main(void)
 	PWR->CSR   |= PWR_CSR_EWUP;
 	
  // HAL_PWR_PVDCallback();
-	//if ((PWR->CSR & PWR_CSR_WUF) == PWR_CSR_WUF) // ???? ?????, ?? ?????????? ????      
-    //     PWR->CR |= PWR_CR_CWUF;
+//	if ((PWR->CSR & PWR_CSR_WUF) == PWR_CSR_WUF) // ???? ?????, ?? ?????????? ????      
+//  { PWR->CR |= PWR_CR_CWUF;
+//    
+//    
+//    
+//  }
   /* USER CODE END Init */
 
   /* Configure the system clock */
@@ -184,13 +189,28 @@ int main(void)
 	HAL_TIM_PWM_Start(&htim1, TIM_CHANNEL_1);
 	ssd1306_Init();
 	
-	while(PowerOn())
-	{
-		if(powercount<=0)
-		{	Power_off2();}
-		//if(powercount>=60)
-		//{break;}
-	}
+//	while(PowerOn())
+//	{
+//		if(powercount<=0)
+//		{	Power_off2();}
+//		//if(powercount>=60)
+//		//{break;}
+//	}
+
+ while(PowerOn2())
+ {
+ 
+ }
+  FireButton=false;
+ 
+      SSD1306_DrawFilledRectangle(0,0,128,64,Black);
+			ssd1306_UpdateScreen();
+			ssd1306_SetCursor(50,10);
+			ssd1306_WriteString("Hi",Font_14x22,White);
+			ssd1306_SetCursor(20,30);
+			ssd1306_WriteString("Cvetaev",Font_14x22,White);
+			ssd1306_UpdateScreen();
+			HAL_Delay(600);
 	
 	SSD1306_DrawFilledRectangle(0,0,128,64,Black);
 	ssd1306_UpdateScreen();
@@ -275,7 +295,10 @@ int main(void)
 		{
 			Set_Out();
 		}
-		
+		if(status==8)
+    {
+      PuffsPrint();
+    }
 		
 		
 		if (status==1)

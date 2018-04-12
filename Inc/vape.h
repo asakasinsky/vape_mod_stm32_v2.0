@@ -6,6 +6,9 @@
  #include "stm32f1xx_hal.h"
  #include <stdbool.h>
 void Kalman(void);
+void Power_click(void);
+void PuffsPrint(void);
+uint8_t PowerOn2(void);
 uint8_t PowerOn(void);	
 void Draw_Frame(void);
 void Draw_Frame2(void);
@@ -31,6 +34,11 @@ void Power_off(void);
 void Power_off2(void);
 void Timer_off(void);
 void Counter_Fire(void);
+
+
+
+
+
 
  #endif
 
