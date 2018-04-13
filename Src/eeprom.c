@@ -2,6 +2,7 @@
 #include "eeprom.h"
 #include "eepromConfig.h"
 
+
 #ifdef  _EEPROM_F1_LOW_DESTINY
 #define		_EEPROM_FLASH_PAGE_SIZE								1024
 /* Base address of the Flash sectors */
@@ -71,7 +72,7 @@ bool EE_Read(uint16_t VirtualAddress, uint32_t* Data)
 	return true;
 }
 
-bool EE_Readi(uint16_t VirtualAddress, int32_t* Data)
+bool  EE_Readi(uint16_t VirtualAddress, int32_t* Data)
 {
 	if(VirtualAddress >=	(_EEPROM_FLASH_PAGE_SIZE/4))
 		return false;
