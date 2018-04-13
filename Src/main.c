@@ -232,7 +232,7 @@ int main(void)
 		EE_Read(2,&timeout);
 		EE_Read(3,&status_eeprom);
 		EE_Read(4,&puffs);
-    EE_Read(5,&(setout));
+    EE_Readi(5,&(setout));
 		status=status_eeprom;
 		old_status=status;
 		volt_set=volt_set_eeprom/100.0;

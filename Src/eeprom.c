@@ -70,6 +70,15 @@ bool EE_Read(uint16_t VirtualAddress, uint32_t* Data)
 	*Data =  (*(__IO uint32_t*)((VirtualAddress*4)+_EEPROM_FLASH_PAGE_ADDRESS));
 	return true;
 }
+
+bool EE_Readi(uint16_t VirtualAddress, int32_t* Data)
+{
+	if(VirtualAddress >=	(_EEPROM_FLASH_PAGE_SIZE/4))
+		return false;
+	*Data =  (*(__IO uint32_t*)((VirtualAddress*4)+_EEPROM_FLASH_PAGE_ADDRESS));
+	return true;
+}
+
 //##########################################################################################################
 bool EE_Write(uint16_t VirtualAddress, uint32_t Data)
 {
