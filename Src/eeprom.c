@@ -72,7 +72,7 @@ bool EE_Read(uint16_t VirtualAddress, uint32_t* Data)
 	return true;
 }
 
-bool  EE_Readi(uint16_t VirtualAddress, int32_t* Data)
+bool  EE_Readint(uint16_t VirtualAddress, int32_t* Data)
 {
 	if(VirtualAddress >=	(_EEPROM_FLASH_PAGE_SIZE/4))
 		return false;

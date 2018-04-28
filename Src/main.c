@@ -63,17 +63,15 @@ TIM_HandleTypeDef htim1;
 
 uint32_t adc_buffer[3];
 float value[3];
-float read_values[2];
-float voltageOut[2];
+volatile float read_values[2];
+volatile float voltageOut[2];
 
 char vOut2[9];  // vOut1 - Om; vOut1 - bat;
 int voltage=400;
 char voltage2[5];
 char watt2[6];
 
-float V_25 = 1.34;
-float Slope = 4.3e-3;
-float Vref = 3.36;
+
 float V_sense;
 float temp;
 char tempP[6];
@@ -102,7 +100,7 @@ uint8_t counterCoil=0;
 bool coilTest=true;
 bool FireButton=false;
 uint16_t temp_tik=0;
-uint16_t time_ADC=0;
+uint16_t time_ADC=10;
 bool charge = false;
 bool clear =false;
 uint32_t tick_delay=0;
@@ -181,6 +179,7 @@ int main(void)
   MX_GPIO_Init();
   MX_DMA_Init();
   MX_ADC1_Init();
+	HAL_ADCEx_Calibration_Start(&hadc1);
   MX_I2C1_Init();
   MX_TIM1_Init();
 
@@ -226,13 +225,13 @@ int main(void)
 	DBGMCU->CR |= DBGMCU_CR_DBG_STANDBY;
 
 	tick_delay = HAL_GetTick();
-	
+	 
 		EE_Read(0,&volt_set_eeprom);
 		EE_Read(1,&watt_set_eeprom);
 		EE_Read(2,&timeout);
 		EE_Read(3,&status_eeprom);
 		EE_Read(4,&puffs);
-    EE_Readi(5,&(setout));
+    EE_Readint(5,&setout);
 		status=status_eeprom;
 		old_status=status;
 		volt_set=volt_set_eeprom/100.0;
@@ -299,12 +298,19 @@ int main(void)
     {
       PuffsPrint();
     }
+		if(status==9)
+    {
+      Info();
+    }
 		
 		
 		if (status==1)
 		{
-			
+			Vout();
 			Draw_Acumulator();
+			Print_Acum();
+			Varivolt();
+			//Read_Amp();
 			PWM_OUT = (PWM_UP*volt_set)/read_values[1]; 
 			
 			
@@ -326,15 +332,17 @@ int main(void)
 							Print_Om();
 					}else {NoCoil();}
 					
-				Varivolt();
+				//Varivolt();
+					
 				if(time_ADC>8)
 					{
+						//Vout();
 						Print_Acum();
 						time_ADC=0;
 					}
 				
-				Counter_Fire();
-			Vout();
+			Counter_Fire();
+			//Vout();
 			Read_Amp();
 				if (temp_tik>=6)
 						{	
@@ -346,11 +354,14 @@ int main(void)
 		
 		if (status==2)
 		{
+			Vout();
 			Draw_Acumulator();
+			Print_Acum();
+			Varivatt();
 			volt_set_w= sqrt(watt_set*R_vape);
 			PWM_OUT = (PWM_UP*volt_set_w)/read_values[1];
-			Vout();
-			Read_Amp();
+			
+			//Read_Amp();
 			if(read_values[0]>1.0&&counterCoil==0)
 					{ 
 						Read_Om_t();
@@ -365,19 +376,22 @@ int main(void)
 					{
 						Print_Om();
 					}
-			Varivatt();
+			
 			
 			if(time_ADC>8)
 					{
+						//Vout();
 						Print_Acum();
 						time_ADC=0;
 					}
 			Counter_Fire();
+			Read_Amp();		
 			if (temp_tik>=6)
 					{	
 						Read_temperature();
 						temp_tik=0;
 					}
+			Read_Amp();		
 					
 							//ssd1306_UpdateScreen();
 
