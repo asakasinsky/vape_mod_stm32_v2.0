@@ -111,7 +111,8 @@ uint32_t status_eeprom;
 uint32_t puffs=0;
 uint32_t powercount=1;
 int32_t setout=0;
-
+extern float temp_timestamp;
+extern bool read_om;
 /* USER CODE END PV */
 
 /* Private function prototypes -----------------------------------------------*/
@@ -314,16 +315,18 @@ int main(void)
 			PWM_OUT = (PWM_UP*volt_set)/read_values[1]; 
 			
 			
-			if(read_values[0]>0.8&&counterCoil==0)
+			if(read_values[0]>0.8&&counterCoil==0&&FireButton==false)
 					{ 
+						//temp_timestamp=0;
 						Read_Om_t();
-						counterCoil=1;
+						//if (temp_timestamp)
+						//counterCoil=1;
 						Print_Om();
 					}
 					
 			if(read_values[0]<0.8&&FireButton==false)
 					{
-						
+						read_om=false;
 						counterCoil=0;
 						NoCoil();
 					}
@@ -362,20 +365,25 @@ int main(void)
 			PWM_OUT = (PWM_UP*volt_set_w)/read_values[1];
 			
 			//Read_Amp();
-			if(read_values[0]>1.0&&counterCoil==0)
+			if(read_values[0]>0.8&&counterCoil==0&&FireButton==false)
 					{ 
+						//temp_timestamp=0;
 						Read_Om_t();
-						counterCoil=1;
+						//if (temp_timestamp)
+						//counterCoil=1;
+						Print_Om();
 					}
-			if(read_values[0]<1.0&&FireButton==false)
+					
+			if(read_values[0]<0.8&&FireButton==false)
 					{
+						read_om=false;
 						counterCoil=0;
 						NoCoil();
 					}
 			if (counterCoil==1)
 					{
-						Print_Om();
-					}
+							Print_Om();
+					}else {NoCoil();}
 			
 			
 			if(time_ADC>8)

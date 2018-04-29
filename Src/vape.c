@@ -67,7 +67,7 @@ float k = 0.15;     //Коэффициент
 
 volatile float temp_timestamp=0.0;  //Отсчет микросекунд нажатой кнопки Fire
 
-
+bool read_om = false;
 
 
 
@@ -879,20 +879,42 @@ void Read_Om_t()
 	
 {
 	HAL_GPIO_WritePin(GPIOA,GPIO_PIN_9,GPIO_PIN_SET);
-	//Read_ADC();
-	
-	if(read_values[0]>1.0){
-	for(uint8_t i=0;i<85;i++)
+	Read_ADC();
+	if (read_om==false)
 	{
-		Read_ADC();
-		//ssd1306_UpdateScreen();
-		R_buff = (read_values[1]/read_values[0])-1;
-	//	HAL_Delay(1);
+		read_om=true;
+		temp_timestamp=0;
 	}
-	//R_buff = (((read_values[1])+0.01)/(read_values[0])+0.01)-1;
+	if (temp_timestamp<350)
+	{
+		//Read_ADC();
+			if(read_values[0]>0.8)
+				{
+					R_buff = (read_values[1]/read_values[0])-1;
+					R_vape = 22.0*R_buff;
+				}
 	}
-	R_vape = 22.0*R_buff;
-	HAL_GPIO_WritePin(GPIOA,GPIO_PIN_9,GPIO_PIN_RESET);
+	else
+	{
+		counterCoil=1;
+		HAL_GPIO_WritePin(GPIOA,GPIO_PIN_9,GPIO_PIN_RESET);
+	}
+	
+	
+	
+	
+//	if(read_values[0]>1.0){
+//	for(uint8_t i=0;i<85;i++)
+//	{
+//		Read_ADC();
+//		//ssd1306_UpdateScreen();
+//		R_buff = (read_values[1]/read_values[0])-1;
+//	//	HAL_Delay(1);
+//	}
+//	//R_buff = (((read_values[1])+0.01)/(read_values[0])+0.01)-1;
+//	}
+//	R_vape = 22.0*R_buff;
+//	HAL_GPIO_WritePin(GPIOA,GPIO_PIN_9,GPIO_PIN_RESET);
 	sprintf(R_vape2,"%0.2f@",R_vape);
 	Print_Om();
 }
