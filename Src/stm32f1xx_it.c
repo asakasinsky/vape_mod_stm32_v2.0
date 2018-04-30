@@ -38,6 +38,7 @@
 /* USER CODE BEGIN 0 */
 extern uint32_t timestamp;
 extern float temp_timestamp;
+extern uint16_t timer_akum;
 /* USER CODE END 0 */
 
 /* External variables --------------------------------------------------------*/
@@ -176,6 +177,7 @@ void SysTick_Handler(void)
   /* USER CODE BEGIN SysTick_IRQn 1 */
 	
 	temp_timestamp++;
+	timer_akum++;
   /* USER CODE END SysTick_IRQn 1 */
 }
 

@@ -6,7 +6,7 @@
 
 uint8_t click=0; 
 char ch_timestamp[6];
-
+uint16_t timer_akum=0;
 extern volatile float read_values[2];
 extern volatile float voltageOut[2];
 extern float value[3];
@@ -276,9 +276,15 @@ void Read_ADC()
 
 void Read_temperature()
 {
-		temp=value[2]/4095.0*3.33;
-		temp=((1.41-temp)/0.0043)+25.0;
+	//	temp=(read_values[1]*read_values[1])/R_vape;
+	//	sprintf(tempP,"%.1fW",temp);
+		
+		
+		//temp=value[2]/4095.0*3.27;
+		temp=((1.41-(value[2]/4095.0*3.35))/0.0043)+25.0;
 		sprintf(tempP,"%.1f*",temp);
+	
+	
 		ssd1306_SetCursor(91,38);
 		ssd1306_WriteString2(tempP,Font_7x9,White);
 		//ssd1306_UpdateScreen();
@@ -388,6 +394,7 @@ if (HAL_GPIO_ReadPin(GPIOA, GPIO_PIN_0))
 										Out_Time();
 									else
 										{
+											timer_akum=0;
 											Print_Sec();
 											FireButton=true;
 											noCoil=true;
@@ -493,6 +500,7 @@ void Varivatt()
 						
 					else
 						{
+							timer_akum=0;
 							TIM1->CCR1=PWM_OUT;
 							tick_delay = HAL_GetTick();
 							Print_Sec();
@@ -888,10 +896,10 @@ void Read_Om_t()
 	if (temp_timestamp<350)
 	{
 		//Read_ADC();
-			if(read_values[0]>0.8)
+			if(read_values[0]>0.5)
 				{
 					R_buff = (read_values[1]/read_values[0])-1;
-					R_vape = 22.0*R_buff;
+					R_vape = 22.1*R_buff;
 				}
 	}
 	else
@@ -931,12 +939,15 @@ void NoCoil()
 
 void Print_Acum()
 {
+	if (timer_akum>3000)
+	{
+		timer_akum=0;
 	bool readACUM=true;
 	if (!HAL_GPIO_ReadPin(GPIOA, GPIO_PIN_0)){
 	
 	
 	
-		SSD1306_DrawFilledRectangle(5,38,70,20, White);
+		SSD1306_DrawFilledRectangle(5,38,71,20, White);
 	if (read_values[1]<3.45&&readACUM==true)
 	{
 		SSD1306_DrawFilledRectangle(5,38,70,20, Black);
@@ -1009,10 +1020,10 @@ void Print_Acum()
 	}
 	if (read_values[1]<4.10&&readACUM==true)
 	{
-			SSD1306_DrawFilledRectangle(76,38,0,20, Black);
+			//SSD1306_DrawFilledRectangle(76,38,0,20, Black);
 			readACUM=false;
 	}
-	
+	}
 }
 }
 

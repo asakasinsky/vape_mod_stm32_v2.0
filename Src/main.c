@@ -100,7 +100,7 @@ uint8_t counterCoil=0;
 bool coilTest=true;
 bool FireButton=false;
 uint16_t temp_tik=0;
-uint16_t time_ADC=10;
+//uint16_t time_ADC=10;
 bool charge = false;
 bool clear =false;
 uint32_t tick_delay=0;
@@ -233,6 +233,8 @@ int main(void)
 		EE_Read(3,&status_eeprom);
 		EE_Read(4,&puffs);
     EE_Readint(5,&setout);
+		if(status_eeprom==0xFFFFFFFF)
+			status_eeprom=1;
 		status=status_eeprom;
 		old_status=status;
 		volt_set=volt_set_eeprom/100.0;
@@ -252,7 +254,7 @@ int main(void)
 		//tick_delay = HAL_GetTick();
 		Read_ADC();
 		temp_tik++;
-		time_ADC++;
+		//time_ADC++;
 		Timer_off();
 		if (clear==true&&charge==false)
 		{
@@ -336,22 +338,28 @@ int main(void)
 					}else {NoCoil();}
 					
 				//Varivolt();
-					
-				if(time_ADC>8)
-					{
-						//Vout();
-						Print_Acum();
-						time_ADC=0;
-					}
+				Print_Acum();
+//				if(time_ADC>8){
+//					if (FireButton==false)
+//					{
+//						//Vout();
+//						Print_Acum();
+//						time_ADC=0;
+//					}else
+//						time_ADC=0;
+//				}
 				
 			Counter_Fire();
 			//Vout();
 			Read_Amp();
-				if (temp_tik>=6)
+				if (temp_tik>=8){
+					if (FireButton==false)
 						{	
 							Read_temperature();
 							temp_tik=0;
-						}
+						}else
+						temp_tik=0;
+				}
 		}
 		
 		
@@ -385,20 +393,29 @@ int main(void)
 							Print_Om();
 					}else {NoCoil();}
 			
-			
-			if(time_ADC>8)
-					{
-						//Vout();
-						Print_Acum();
-						time_ADC=0;
-					}
+			Print_Acum();
+//			if(time_ADC>8){
+//				if (FireButton==false)
+//					{
+//						//Vout();
+//						Print_Acum();
+//						time_ADC=0;
+//					}else 
+//						time_ADC=0;
+//			}
+				
+					
 			Counter_Fire();
 			Read_Amp();		
-			if (temp_tik>=6)
+			if (temp_tik>=12){
+				if (FireButton==false)
 					{	
 						Read_temperature();
 						temp_tik=0;
-					}
+					}else 
+						temp_tik=0;
+				}
+					
 			Read_Amp();		
 					
 							//ssd1306_UpdateScreen();
