@@ -5,6 +5,7 @@
 
 RTC_DateTypeDef sdatestructureget;
 RTC_TimeTypeDef stimestructureget;
+RTC_TimeTypeDef setT;
 extern RTC_HandleTypeDef hrtc;
 
 
@@ -37,8 +38,8 @@ uint16_t tik=0;
 extern uint16_t time_ADC;
 int i;
 
-char *st[11][6]={"           "," ÂÀĞÈÂÎËÜÒ "," ÂÀĞÈÂÀÒÒ  "," ÍÀÑÒĞÎÉÊÈ ","  Èíôî     ","           "};
-char *st_settings[12][7]={"           "," ÂĞÅÌß ÂÛÊË"," ÂĞÅÌß OUT  "," ÇÀÒßÆÊÈ  "," ÑÁĞÎÑ     "," ÍÀÇÀÄ     ","           "};
+char *st[11][6]={"           "," ÂÀĞÈÂÎËÜÒ "," ÂÀĞÈÂÀÒÒ  "," ÍÀÑÒĞÎÉÊÈ "," Èíôî      ","           "};
+char *st_settings[11][8]={"           "," ÂĞÅÌß ÂÛÊË"," ÂĞÅÌß OUT "," ÇÀÒßÆÊÈ   "," ÑÁĞÎÑ     "," ÓÑÒ ×ÀÑÎÂ "," ÍÀÇÀÄ     ","           "};
 
 uint8_t m=2;
 uint8_t m2=2;
@@ -75,7 +76,13 @@ bool read_om = false;
 char showsec[3]={0};
 char showtime[9]={0};
 uint8_t status_timer = 0;
-uint32_t clok =0; 
+uint32_t clok =0;
+
+uint8_t setTimeH=0;
+uint8_t setTimeM=0;
+uint8_t SetMin=0;
+char timeoutM[4]={0};
+extern bool set_RTC;
 
 //uint16_t tempSecond=0;
 
@@ -100,7 +107,7 @@ void Print_Sec()
     
     
 		
-		sprintf(ch_timestamp,"%0.2fs",(temp_timestamp/1000.0));
+		sprintf((char *)ch_timestamp,"%0.2fs",(temp_timestamp/1000.0));
 		ssd1306_SetCursor(4,7);
 		ssd1306_WriteString(ch_timestamp,Font_16x25,White);
 
@@ -294,7 +301,7 @@ void Read_temperature()
 		
 		//temp=value[2]/4095.0*3.27;
 		temp=((1.39-(value[2]/4095.0*3.33))/0.0043)+25.0;
-		sprintf(tempP,"%.1f* ",temp);
+		sprintf((char *)tempP,"%.1f* ",temp);
 	
 	
 		ssd1306_SetCursor(91,38);
@@ -308,7 +315,7 @@ void Read_sensor_charge()
 {
 		temp=value[2]/4095.0*3.3;
 		temp=(1.34-temp)/0.0043+25;
-		sprintf(tempP,"%.1f*",temp);
+		sprintf((char *)tempP,"%.1f*",temp);
 		ssd1306_SetCursor(45,50);
 		ssd1306_WriteString2(tempP,Font_7x9,White);
 		ssd1306_UpdateScreen();
@@ -599,7 +606,7 @@ void PuffsPrint()
 	ssd1306_WriteString2("Îáùåå êîëè÷åñòâî",Font_7x9,White);
   ssd1306_SetCursor(40,11);
 	ssd1306_WriteString2("çàòÿæåê",Font_7x9,White);
-  sprintf(puffs_print,"%d",puffs);
+  sprintf((char *)puffs_print,"%d",puffs);
   ssd1306_SetCursor(50,34);
   ssd1306_WriteString2(puffs_print,Font_7x9,White);
 	ssd1306_SetCursor(20,51);
@@ -646,7 +653,7 @@ if(setout>6000)
      
       ssd1306_SetCursor(42,27);
       ssd1306_WriteString2("Îïàñíî",Font_7x9,White);
-      sprintf(setout2,"%.1f Sec ",(float)(setout/1000.0));
+      sprintf((char *)setout2,"%.1f Sec ",(float)(setout/1000.0));
       ssd1306_SetCursor(22,42);
       ssd1306_WriteString(setout2,Font_13x19,White);
       ssd1306_UpdateScreen();
@@ -663,7 +670,7 @@ if(setout>6000)
         {
             ssd1306_SetCursor(42,27);
             ssd1306_WriteString2("      ",Font_7x9,White);
-            sprintf(setout2,"%.1f Sec ",(float)(setout/1000.0));
+            sprintf((char *)setout2,"%.1f Sec ",(float)(setout/1000.0));
 						ssd1306_SetCursor(22,42);
 						ssd1306_WriteString(setout2,Font_13x19,White);
 						ssd1306_UpdateScreen();
@@ -674,7 +681,114 @@ if(setout>6000)
 }
 
 
+  void Set_Time()
+{
   
+    SSD1306_DrawFilledRectangle(0,0,128,22,Black);
+    ssd1306_SetCursor(5,1);
+		ssd1306_WriteString2("Íàñòğîéêà âğåìåíè",Font_7x9,White);
+    ssd1306_SetCursor(5,11);
+		ssd1306_WriteString2("Fire - óñòàíîâêà",Font_7x9,White);
+
+	if (!HAL_GPIO_ReadPin(GPIOB, GPIO_PIN_14)&&SetMin==0)
+		{
+      setTimeH=setTimeH+1;
+			if(setTimeH>23)
+        setTimeH=0;
+			
+					
+		}
+
+if (!HAL_GPIO_ReadPin(GPIOB, GPIO_PIN_12)&&SetMin==0)
+		{
+      setTimeH=setTimeH-1;
+      if(setTimeH>23)
+        setTimeH=23;
+			
+			
+		}
+if (!HAL_GPIO_ReadPin(GPIOB, GPIO_PIN_14)&&SetMin==1)
+  {
+    setTimeM=setTimeM+1;
+    if(setTimeM>60)
+      setTimeM=0;
+    
+        
+  }
+
+if (!HAL_GPIO_ReadPin(GPIOB, GPIO_PIN_12)&&SetMin==1)
+  {
+    setTimeM=setTimeM-1;
+    if(setTimeM>60)
+      setTimeM=60;
+    
+    
+  }    
+
+if (!HAL_GPIO_ReadPin(GPIOB, GPIO_PIN_13))
+     {
+      SetMin++;
+       if(SetMin>=2)
+         SetMin=0;
+     }
+
+         
+    
+    
+//    
+//if(timeout>9)
+//				{
+//          
+//					sprintf((char *)timeout2,"%d",(setTime));
+//					ssd1306_SetCursor(50,39);
+//					ssd1306_WriteString(timeout2,Font_13x19,White);
+//					ssd1306_UpdateScreen();
+//				}else 
+ if(setTimeH>9)
+    {
+      sprintf(timeout2,"%d:",(setTimeH));
+      ssd1306_SetCursor(32,39);
+      ssd1306_WriteString(timeout2,Font_13x19,White);
+     // ssd1306_UpdateScreen();
+    
+    }else 
+      {
+        sprintf(timeout2,"0%d:",(setTimeH));
+        ssd1306_SetCursor(32,39);
+        ssd1306_WriteString(timeout2,Font_13x19,White);
+        //ssd1306_UpdateScreen();
+      }
+      
+ if(setTimeM>9)
+  {
+    sprintf(timeoutM,"%d ",(setTimeM));
+    ssd1306_SetCursor(72,39);
+    ssd1306_WriteString(timeoutM,Font_13x19,White);
+    ssd1306_UpdateScreen();
+  
+  }else 
+    {
+      sprintf(timeoutM,"0%d ",(setTimeM));
+      ssd1306_SetCursor(72,39);
+      ssd1306_WriteString(timeoutM,Font_13x19,White);
+      ssd1306_UpdateScreen();
+    }    
+    
+if (HAL_GPIO_ReadPin(GPIOA, GPIO_PIN_0))
+     {
+       SSD1306_DrawFilledRectangle(0,0,128,64,Black);
+      // ssd1306_UpdateScreen();
+       set_RTC=false;
+       setT.Hours = setTimeH;
+       setT.Minutes = setTimeM;
+       setT.Seconds = 0x00;
+       HAL_RTC_SetTime(&hrtc, &setT, RTC_FORMAT_BIN);
+       
+       status=0;
+       old_status=status;
+     }
+	
+}
 	
 	
 
@@ -709,7 +823,7 @@ if (!HAL_GPIO_ReadPin(GPIOB, GPIO_PIN_13))
 if(timeout>99000)
 				{
           
-					sprintf(timeout2,"%d",(timeout/1000));
+					sprintf((char *)timeout2,"%d",(timeout/1000));
 					ssd1306_SetCursor(50,39);
 					ssd1306_WriteString(timeout2,Font_13x19,White);
 					ssd1306_UpdateScreen();
@@ -745,13 +859,26 @@ void Menu_settings()
 	//tick_delay = HAL_GetTick();
 	
 	if (!HAL_GPIO_ReadPin(GPIOB, GPIO_PIN_12)&&temp_timestamp>100)
-		{if (m2>=5)m2=5;else m2++;}
+		{if (m2>=6)m2=6;else m2++;}
 
 if (!HAL_GPIO_ReadPin(GPIOB, GPIO_PIN_14)&&temp_timestamp>100)
 		{if(m2<=1)m2=1;else m2--;}
 
+    
+    
+    
+    
+    if (!HAL_GPIO_ReadPin(GPIOB, GPIO_PIN_13)&&m2==5&&temp_timestamp>100)
+			{ 
+				SSD1306_DrawFilledRectangle(0,24,128,40,Black);
+				ssd1306_UpdateScreen();
+       
+        status=11;
+				old_status=status;
+       
+			}
 		
-		if (!HAL_GPIO_ReadPin(GPIOB, GPIO_PIN_13)&&m2==5&&temp_timestamp>100)
+		if (!HAL_GPIO_ReadPin(GPIOB, GPIO_PIN_13)&&m2==6&&temp_timestamp>100)
 			{ 
 				status=0;
 				old_status=status; 

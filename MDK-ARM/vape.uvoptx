@@ -408,6 +408,21 @@
           <WinNumber>1</WinNumber>
           <ItemText>tempSecond,0x0A</ItemText>
         </Ww>
+        <Ww>
+          <count>52</count>
+          <WinNumber>1</WinNumber>
+          <ItemText>UIND,0x0A</ItemText>
+        </Ww>
+        <Ww>
+          <count>53</count>
+          <WinNumber>1</WinNumber>
+          <ItemText>setTimeM,0x10</ItemText>
+        </Ww>
+        <Ww>
+          <count>54</count>
+          <WinNumber>1</WinNumber>
+          <ItemText>setTimeH</ItemText>
+        </Ww>
       </WatchWindow1>
       <WatchWindow2>
         <Ww>

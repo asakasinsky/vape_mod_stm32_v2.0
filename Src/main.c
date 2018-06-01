@@ -91,28 +91,31 @@ float R_buff = 0.0;
 //int raw = 0;
 char R_vape2[6];
 
-uint8_t status=2;
-uint8_t old_status=1;
+uint8_t status = 2;
+uint8_t old_status = 1;
 
 bool clearLCD = false;
 
 
-bool noCoil=true;
-uint8_t counterCoil=0;
-bool coilTest=true;
-bool FireButton=false;
-uint16_t temp_tik=0;
-//uint16_t time_ADC=10;
+bool noCoil = true;
+uint8_t counterCoil = 0;
+bool coilTest = true;
+bool FireButton = false;
+uint16_t temp_tik = 0;
+//uint16_t time_ADC = 10;
 bool charge = false;
-bool clear =false;
-uint32_t tick_delay=0;
-uint32_t timeout=10000;
+bool clear = false;
+uint32_t tick_delay = 0;
+uint32_t timeout = 10000;
 uint32_t volt_set_eeprom;
 uint32_t watt_set_eeprom;
 uint32_t status_eeprom;
-uint32_t puffs=0;
-uint32_t powercount=1;
-int32_t setout=0;
+uint32_t puffs = 0;
+uint32_t powercount = 1;
+int32_t setout = 0;
+uint32_t UIND[3];
+bool set_RTC = false;
+
 
 extern float temp_timestamp;
 extern bool read_om;
@@ -256,6 +259,9 @@ int main(void)
 		
 		//tick_delay = HAL_GetTick();
 		
+    HAL_GetUID(UIND);
+    HAL_Delay(20);
+    
   /* USER CODE END 2 */
 
   /* Infinite loop */
@@ -322,6 +328,11 @@ int main(void)
 		if(status==10)
     {
       Screensaver();
+    }
+    	if(status==11)
+    {
+      set_RTC=true;
+      Set_Time();
     }
 		
 		
@@ -443,7 +454,7 @@ int main(void)
 		}
 
 		
-		if (!HAL_GPIO_ReadPin(GPIOB, GPIO_PIN_13)&&status!=0)
+		if (!HAL_GPIO_ReadPin(GPIOB, GPIO_PIN_13)&&status!=0&&set_RTC==false)
 			{
 				clearLCD=true;
 				
