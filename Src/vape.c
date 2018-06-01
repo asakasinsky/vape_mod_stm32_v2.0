@@ -3,10 +3,14 @@
 #include <math.h>
 #include "eeprom.h"
 
+RTC_DateTypeDef sdatestructureget;
+RTC_TimeTypeDef stimestructureget;
+extern RTC_HandleTypeDef hrtc;
+
 
 uint8_t click=0; 
 char ch_timestamp[6];
-uint16_t timer_akum=0;
+uint16_t timer_akum=4000;
 extern volatile float read_values[2];
 extern volatile float voltageOut[2];
 extern float value[3];
@@ -68,8 +72,12 @@ float k = 0.15;     //Коэффициент
 volatile float temp_timestamp=0.0;  //Отсчет микросекунд нажатой кнопки Fire
 
 bool read_om = false;
+char showsec[3]={0};
+char showtime[9]={0};
+uint8_t status_timer = 0;
+uint32_t clok =0; 
 
-
+//uint16_t tempSecond=0;
 
 
 void Out_Time()
@@ -79,14 +87,18 @@ void Out_Time()
 	ssd1306_SetCursor(0,9);
 	ssd1306_WriteString("Out Time",Font_11x18,White);
 	ssd1306_UpdateScreen();	
-							
+	
 
 }
 
 
+ 
+
 void Print_Sec()
 {
-		
+	
+    
+    
 		
 		sprintf(ch_timestamp,"%0.2fs",(temp_timestamp/1000.0));
 		ssd1306_SetCursor(4,7);
@@ -281,8 +293,8 @@ void Read_temperature()
 		
 		
 		//temp=value[2]/4095.0*3.27;
-		temp=((1.41-(value[2]/4095.0*3.35))/0.0043)+25.0;
-		sprintf(tempP,"%.1f*",temp);
+		temp=((1.39-(value[2]/4095.0*3.33))/0.0043)+25.0;
+		sprintf(tempP,"%.1f* ",temp);
 	
 	
 		ssd1306_SetCursor(91,38);
@@ -294,7 +306,7 @@ void Read_temperature()
 
 void Read_sensor_charge()
 {
-		temp=value[2]/4096.0*3.3;
+		temp=value[2]/4095.0*3.3;
 		temp=(1.34-temp)/0.0043+25;
 		sprintf(tempP,"%.1f*",temp);
 		ssd1306_SetCursor(45,50);
@@ -340,8 +352,8 @@ void Read_Amp()
 		{
 //			case 1:amper=volt_set/R_vape;break;
 //			case 2:amper=volt_set_w/R_vape;break;
-			case 1:amper=(read_values[1]-read_values[0])/R_vape;sprintf(amper_print,"%.1fA",amper);break;
-			case 2:amper=(read_values[1]-read_values[0])/R_vape;sprintf(amper_print,"%.1fA",amper);break;
+			case 1:amper=(read_values[1]-read_values[0])/R_vape;sprintf(amper_print,"%.1fA ",amper);break;
+			case 2:amper=(read_values[1]-read_values[0])/R_vape;sprintf(amper_print,"%.1fA ",amper);break;
 		}
 		
 	//sprintf(amper_print,"%.1fA",amper);
@@ -411,6 +423,7 @@ if (HAL_GPIO_ReadPin(GPIOA, GPIO_PIN_0))
 										ssd1306_WriteString("NO COIL",Font_11x18,White);
 										ssd1306_UpdateScreen();
 										FireButton=true;
+										tick_delay = HAL_GetTick();
 									}
 						}
 						else{		SSD1306_DrawFilledRectangle(1,1,85,30,Black);
@@ -421,6 +434,7 @@ if (HAL_GPIO_ReadPin(GPIOA, GPIO_PIN_0))
 										low_batt=1;
 										noCoil=false;
 										FireButton=true;
+										tick_delay = HAL_GetTick();
 								}
 					}
 //				else
@@ -514,6 +528,7 @@ void Varivatt()
 							ssd1306_WriteString("NO COIL",Font_11x18,White);
 							ssd1306_UpdateScreen();
 							FireButton=true;
+							tick_delay = HAL_GetTick();
 						}
 			} else{	SSD1306_DrawFilledRectangle(1,1,85,30,Black);
 							ssd1306_SetCursor(0,9);
@@ -524,6 +539,7 @@ void Varivatt()
 							noCoil=false;
 							//FireButton=false;
 							FireButton=true;
+              tick_delay = HAL_GetTick();
 				
 						}
 		}
@@ -899,7 +915,7 @@ void Read_Om_t()
 			if(read_values[0]>0.5)
 				{
 					R_buff = (read_values[1]/read_values[0])-1;
-					R_vape = 22.1*R_buff;
+					R_vape = 33.0*R_buff;
 				}
 	}
 	else
@@ -939,7 +955,7 @@ void NoCoil()
 
 void Print_Acum()
 {
-	if (timer_akum>3000)
+	if (timer_akum>1000)
 	{
 		timer_akum=0;
 	bool readACUM=true;
@@ -1445,6 +1461,8 @@ void Timer_off()
 }
 
 
+
+
 void Low_batt()
 {
 	
@@ -1527,3 +1545,50 @@ return 1;
 
 
 
+
+void Screensaver()
+{
+  
+	HAL_RTC_GetTime(&hrtc, &stimestructureget,  RTC_FORMAT_BCD);
+	sprintf((char *)showtime, "%02X:%02X", stimestructureget.Hours, stimestructureget.Minutes);
+  sprintf((char *)showsec, "%02X", stimestructureget.Seconds);
+	SSD1306_DrawFilledRectangle(0,0,128,64,Black);
+	ssd1306_SetCursor(25,23);
+  ssd1306_WriteString(showtime,Font_16x26,White);
+  ssd1306_SetCursor(106,36);
+  ssd1306_WriteString(showsec,Font_7x10,White);
+  
+  uint8_t tempSecond = stimestructureget.Seconds % 2;
+   if (tempSecond==0){
+    SSD1306_DrawFilledRectangle(57,23,11,26,Black);
+    clok = temp_timestamp;
+    ssd1306_UpdateScreen();
+    }
+	if (HAL_GPIO_ReadPin(GPIOA, GPIO_PIN_0))
+		{
+			status=status_timer;
+			old_status=status_timer;
+			SSD1306_DrawFilledRectangle(0,0,128,64,Black);
+			tick_delay=0;
+      timer_akum=6000;
+		}
+
+
+
+}
+
+void Timer_screensaver()
+{
+	//tick_delay = HAL_GetTick();
+	
+	if((HAL_GetTick()-tick_delay)>=30000)
+	{
+		
+		status_timer=status;
+		status=10;
+		old_status=status; 
+		
+		Screensaver();
+	}
+	
+}

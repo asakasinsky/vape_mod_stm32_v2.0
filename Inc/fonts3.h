@@ -12,6 +12,7 @@ typedef struct {
 
 // some available fonts
 extern FontDef2 Font_7x9;
+//extern FontDef2 Font_10x18;
 
 
 #endif

@@ -538,6 +538,7 @@ void ssd1306_WriteChar2(char ch, FontDef2 Font, SSD1306_COLOR color)
       x = Font.FontWidth;
       while(x--)
       {
+        //if (pixel & 0x0001) 
         if (pixel & 0x0001) 
         {
           ssd1306_DrawPixel(SSD1306.CurrentX + x, (SSD1306.CurrentY + y), color);

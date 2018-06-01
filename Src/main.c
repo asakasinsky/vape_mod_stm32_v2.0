@@ -1,7 +1,8 @@
+
 /**
   ******************************************************************************
-  * File Name          : main.c
-  * Description        : Main program body
+  * @file           : main.c
+  * @brief          : Main program body
   ******************************************************************************
   ** This notice applies to any and all portions of this file
   * that are not between comment pairs USER CODE BEGIN and
@@ -35,7 +36,6 @@
   *
   ******************************************************************************
   */
-
 /* Includes ------------------------------------------------------------------*/
 #include "main.h"
 #include "stm32f1xx_hal.h"
@@ -56,8 +56,10 @@ DMA_HandleTypeDef hdma_adc1;
 
 I2C_HandleTypeDef hi2c1;
 
-TIM_HandleTypeDef htim1;
+RTC_HandleTypeDef hrtc;
 
+TIM_HandleTypeDef htim1;
+RTC_TimeTypeDef sTime;
 /* USER CODE BEGIN PV */
 /* Private variables ---------------------------------------------------------*/
 
@@ -111,6 +113,7 @@ uint32_t status_eeprom;
 uint32_t puffs=0;
 uint32_t powercount=1;
 int32_t setout=0;
+
 extern float temp_timestamp;
 extern bool read_om;
 /* USER CODE END PV */
@@ -122,6 +125,7 @@ static void MX_DMA_Init(void);
 static void MX_ADC1_Init(void);
 static void MX_I2C1_Init(void);
 static void MX_TIM1_Init(void);
+static void MX_RTC_Init(void);
 
 void HAL_TIM_MspPostInit(TIM_HandleTypeDef *htim);
                                 
@@ -143,10 +147,13 @@ void HAL_ADC_ConvCpltCallback(ADC_HandleTypeDef* hadc)
 
 /* USER CODE END 0 */
 
+/**
+  * @brief  The application entry point.
+  *
+  * @retval None
+  */
 int main(void)
-
 {
-
   /* USER CODE BEGIN 1 */
 
   /* USER CODE END 1 */
@@ -180,13 +187,19 @@ int main(void)
   MX_GPIO_Init();
   MX_DMA_Init();
   MX_ADC1_Init();
-	HAL_ADCEx_Calibration_Start(&hadc1);
   MX_I2C1_Init();
   MX_TIM1_Init();
-
+  MX_RTC_Init();
   /* USER CODE BEGIN 2 */
+//	sTime.Hours = 0x22;
+//	sTime.Minutes = 0x45;
+//	sTime.Seconds = 0x30;
+//	
+//	HAL_RTC_SetTime(&hrtc,&sTime,RTC_FORMAT_BCD);
+	HAL_ADCEx_Calibration_Start(&hadc1);
 	HAL_ADC_Start_DMA(&hadc1,adc_buffer,3);
 	HAL_TIM_PWM_Start(&htim1, TIM_CHANNEL_1);
+  
 	ssd1306_Init();
 	
 //	while(PowerOn())
@@ -207,10 +220,11 @@ int main(void)
 			ssd1306_UpdateScreen();
 			ssd1306_SetCursor(50,10);
 			ssd1306_WriteString("Hi",Font_14x22,White);
-			ssd1306_SetCursor(20,30);
+			ssd1306_SetCursor(20,33);
 			ssd1306_WriteString("Cvetaev",Font_14x22,White);
 			ssd1306_UpdateScreen();
 			HAL_Delay(600);
+
 	
 	SSD1306_DrawFilledRectangle(0,0,128,64,Black);
 	ssd1306_UpdateScreen();
@@ -305,6 +319,10 @@ int main(void)
     {
       Info();
     }
+		if(status==10)
+    {
+      Screensaver();
+    }
 		
 		
 		if (status==1)
@@ -360,6 +378,8 @@ int main(void)
 						}else
 						temp_tik=0;
 				}
+				Timer_screensaver();	
+				
 		}
 		
 		
@@ -417,7 +437,7 @@ int main(void)
 				}
 					
 			Read_Amp();		
-					
+			Timer_screensaver();	
 							//ssd1306_UpdateScreen();
 
 		}
@@ -500,8 +520,10 @@ int main(void)
 
 }
 
-/** System Clock Configuration
-*/
+/**
+  * @brief System Clock Configuration
+  * @retval None
+  */
 void SystemClock_Config(void)
 {
 
@@ -511,9 +533,10 @@ void SystemClock_Config(void)
 
     /**Initializes the CPU, AHB and APB busses clocks 
     */
-  RCC_OscInitStruct.OscillatorType = RCC_OSCILLATORTYPE_HSE;
+  RCC_OscInitStruct.OscillatorType = RCC_OSCILLATORTYPE_HSE|RCC_OSCILLATORTYPE_LSE;
   RCC_OscInitStruct.HSEState = RCC_HSE_ON;
   RCC_OscInitStruct.HSEPredivValue = RCC_HSE_PREDIV_DIV2;
+  RCC_OscInitStruct.LSEState = RCC_LSE_ON;
   RCC_OscInitStruct.HSIState = RCC_HSI_ON;
   RCC_OscInitStruct.PLL.PLLState = RCC_PLL_ON;
   RCC_OscInitStruct.PLL.PLLSource = RCC_PLLSOURCE_HSE;
@@ -537,7 +560,8 @@ void SystemClock_Config(void)
     _Error_Handler(__FILE__, __LINE__);
   }
 
-  PeriphClkInit.PeriphClockSelection = RCC_PERIPHCLK_ADC;
+  PeriphClkInit.PeriphClockSelection = RCC_PERIPHCLK_RTC|RCC_PERIPHCLK_ADC;
+  PeriphClkInit.RTCClockSelection = RCC_RTCCLKSOURCE_LSE;
   PeriphClkInit.AdcClockSelection = RCC_ADCPCLK2_DIV6;
   if (HAL_RCCEx_PeriphCLKConfig(&PeriphClkInit) != HAL_OK)
   {
@@ -579,7 +603,7 @@ static void MX_ADC1_Init(void)
     /**Configure Regular Channel 
     */
   sConfig.Channel = ADC_CHANNEL_5;
-  sConfig.Rank = 1;
+  sConfig.Rank = ADC_REGULAR_RANK_1;
   sConfig.SamplingTime = ADC_SAMPLETIME_239CYCLES_5;
   if (HAL_ADC_ConfigChannel(&hadc1, &sConfig) != HAL_OK)
   {
@@ -589,7 +613,7 @@ static void MX_ADC1_Init(void)
     /**Configure Regular Channel 
     */
   sConfig.Channel = ADC_CHANNEL_4;
-  sConfig.Rank = 2;
+  sConfig.Rank = ADC_REGULAR_RANK_2;
   if (HAL_ADC_ConfigChannel(&hadc1, &sConfig) != HAL_OK)
   {
     _Error_Handler(__FILE__, __LINE__);
@@ -598,7 +622,7 @@ static void MX_ADC1_Init(void)
     /**Configure Regular Channel 
     */
   sConfig.Channel = ADC_CHANNEL_TEMPSENSOR;
-  sConfig.Rank = 3;
+  sConfig.Rank = ADC_REGULAR_RANK_3;
   if (HAL_ADC_ConfigChannel(&hadc1, &sConfig) != HAL_OK)
   {
     _Error_Handler(__FILE__, __LINE__);
@@ -622,6 +646,50 @@ static void MX_I2C1_Init(void)
   if (HAL_I2C_Init(&hi2c1) != HAL_OK)
   {
     _Error_Handler(__FILE__, __LINE__);
+  }
+
+}
+
+/* RTC init function */
+static void MX_RTC_Init(void)
+{
+
+  RTC_TimeTypeDef sTime;
+  RTC_DateTypeDef DateToUpdate;
+
+    /**Initialize RTC Only 
+    */
+  hrtc.Instance = RTC;
+  if(HAL_RTCEx_BKUPRead(&hrtc, RTC_BKP_DR1) != 0x32F2){
+  hrtc.Init.AsynchPrediv = RTC_AUTO_1_SECOND;
+  hrtc.Init.OutPut = RTC_OUTPUTSOURCE_ALARM;
+  if (HAL_RTC_Init(&hrtc) != HAL_OK)
+  {
+    _Error_Handler(__FILE__, __LINE__);
+  }
+
+    /**Initialize RTC and set the Time and Date 
+    */
+//  sTime.Hours = 0x1;
+//  sTime.Minutes = 0x0;
+//  sTime.Seconds = 0x0;
+
+  if (HAL_RTC_SetTime(&hrtc, &sTime, RTC_FORMAT_BCD) != HAL_OK)
+  {
+    _Error_Handler(__FILE__, __LINE__);
+  }
+
+//  DateToUpdate.WeekDay = RTC_WEEKDAY_MONDAY;
+//  DateToUpdate.Month = RTC_MONTH_JANUARY;
+//  DateToUpdate.Date = 0x1;
+//  DateToUpdate.Year = 0x0;
+
+  if (HAL_RTC_SetDate(&hrtc, &DateToUpdate, RTC_FORMAT_BCD) != HAL_OK)
+  {
+    _Error_Handler(__FILE__, __LINE__);
+  }
+
+    HAL_RTCEx_BKUPWrite(&hrtc,RTC_BKP_DR1,0x32F2);
   }
 
 }
@@ -721,6 +789,7 @@ static void MX_GPIO_Init(void)
   GPIO_InitTypeDef GPIO_InitStruct;
 
   /* GPIO Ports Clock Enable */
+  __HAL_RCC_GPIOC_CLK_ENABLE();
   __HAL_RCC_GPIOD_CLK_ENABLE();
   __HAL_RCC_GPIOA_CLK_ENABLE();
   __HAL_RCC_GPIOB_CLK_ENABLE();
@@ -778,45 +847,43 @@ void Vout(void)
 
 /**
   * @brief  This function is executed in case of error occurrence.
-  * @param  None
+  * @param  file: The file name as string.
+  * @param  line: The line in file as a number.
   * @retval None
   */
-void _Error_Handler(char * file, int line)
+void _Error_Handler(char *file, int line)
 {
   /* USER CODE BEGIN Error_Handler_Debug */
   /* User can add his own implementation to report the HAL error return state */
   while(1) 
   {
   }
-  /* USER CODE END Error_Handler_Debug */ 
+  /* USER CODE END Error_Handler_Debug */
 }
 
-#ifdef USE_FULL_ASSERT
-
+#ifdef  USE_FULL_ASSERT
 /**
-   * @brief Reports the name of the source file and the source line number
-   * where the assert_param error has occurred.
-   * @param file: pointer to the source file name
-   * @param line: assert_param error line source number
-   * @retval None
-   */
+  * @brief  Reports the name of the source file and the source line number
+  *         where the assert_param error has occurred.
+  * @param  file: pointer to the source file name
+  * @param  line: assert_param error line source number
+  * @retval None
+  */
 void assert_failed(uint8_t* file, uint32_t line)
-{
+{ 
   /* USER CODE BEGIN 6 */
   /* User can add his own implementation to report the file name and line number,
     ex: printf("Wrong parameters value: file %s on line %d\r\n", file, line) */
   /* USER CODE END 6 */
-
 }
-
-#endif
-
-/**
-  * @}
-  */ 
+#endif /* USE_FULL_ASSERT */
 
 /**
   * @}
-*/ 
+  */
+
+/**
+  * @}
+  */
 
 /************************ (C) COPYRIGHT STMicroelectronics *****END OF FILE****/

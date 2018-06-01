@@ -1,6 +1,4 @@
 
-
- 
  #ifndef __VAPE_H
  #define __VAPE_H
  #include "stm32f1xx_hal.h"
@@ -35,9 +33,8 @@ void Power_off(void);
 void Power_off2(void);
 void Timer_off(void);
 void Counter_Fire(void);
-
-
-
+void Screensaver(void);
+void Timer_screensaver(void);
 
 
 
